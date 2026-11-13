@@ -1,6 +1,6 @@
 // ==============================================================================
-// V.E.N.U.S. Main Application Shell (Empathetic & Female-Centric Space Health)
-// NASA Space Apps Challenge 2026
+// V.E.N.U.S. Main Application Shell
+// Swiss-Aerospace Design: High signal-to-noise ratio, zero AI clichés
 // ==============================================================================
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -26,7 +26,7 @@ import { CountermeasuresModal } from './components/protocols/CountermeasuresModa
 import { AuditTrailDrawer } from './components/audit/AuditTrailDrawer';
 
 // Icons
-import { HeartHandshake, ChevronRight, Sparkles } from 'lucide-react';
+import { Stethoscope, ArrowUpRight, Bell } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [astronaut] = useState(INITIAL_ASTRONAUT);
@@ -51,7 +51,7 @@ export const App: React.FC = () => {
 
   const triggerNotification = (msg: string) => {
     setNotification(msg);
-    setTimeout(() => setNotification(null), 4500);
+    setTimeout(() => setNotification(null), 4000);
   };
 
   const recordAudit = useCallback((ruleId: string, desc: string, rationale: string, level: TriageLevel) => {
@@ -62,8 +62,8 @@ export const App: React.FC = () => {
   useEffect(() => {
     recordAudit(
       'RULE-HRP-INIT',
-      'Verificación inicial de bienvenida',
-      'Parámetros fisiológicos iniciales verificados para Cmdr. Vance en trayecto a Marte.',
+      'Initial Physiological Baseline',
+      'Baseline parameters confirmed for Cmdr. Vance en route to Mars.',
       'NOMINAL'
     );
   }, []);
@@ -76,14 +76,14 @@ export const App: React.FC = () => {
       dailyPillTaken: true,
       estrogenLoadIndex: Math.min(100, prev.estrogenLoadIndex + 4),
     }));
-    const msg = 'Dosis diaria registrada con éxito. Tu ciclo hormonal continúa en perfecto equilibrio.';
+    const msg = 'Dosis diaria de supresión hormonal registrada. Nivel plasmático estable.';
     setLastSpokenText(msg);
     speakTacticalMessage(msg);
-    triggerNotification('Dosis diaria registrada 🌸 Ciclo en equilibrio');
+    triggerNotification('Dosis de ciclo registrada · Estado hormonal nominal');
     recordAudit(
       'RULE-ENDO-04',
-      'Ingesta de supresión hormonal registrada',
-      'Adherencia al régimen de ciclo confirmada. Vascularización protegida.',
+      'Oral Contraceptive Ingestion Confirmed',
+      'Cycle suppression adherence maintained. Vascular risk constant.',
       'NOMINAL'
     );
   }, [metrics.dailyPillTaken, recordAudit]);
@@ -91,14 +91,14 @@ export const App: React.FC = () => {
   // Action: Inject emergency incident
   const handleSimulateEmergency = useCallback(() => {
     setMetrics(SCENARIO_CRITICAL_EMERGENCY);
-    const msg = 'Elena, he detectado estasis venosa en tu cuello y leve aumento de presión ocular. Cuidemos tu circulación juntas.';
+    const msg = 'Alerta V.E.N.U.S.: Estasis crítica en vena yugular interna y elevación de SANS. Desplegar ultrasonido.';
     setLastSpokenText(msg);
     speakTacticalMessage(msg);
-    triggerNotification('Atención: Retención venosa yugular detectada.');
+    triggerNotification('Incidente inyectado: Estasis yugular severa (<2 cm/s)');
     recordAudit(
       'RULE-CRIT-IJV-09',
-      'Velocidad de flujo retrógrado/estancado (< 2 cm/s)',
-      'Congestión venosa cefálica combinada con carga hormonal. Protocolo de alivio sugerido.',
+      'IJV Flow Stagnation / Retrograde Velocity',
+      'Severe stasis combined with hormonal load. Class-A countermeasure required.',
       'CRITICAL_THROMBUS'
     );
   }, [recordAudit]);
@@ -106,14 +106,14 @@ export const App: React.FC = () => {
   // Action: Reset nominal
   const handleResetNominal = useCallback(() => {
     setMetrics(SCENARIO_NOMINAL);
-    const msg = 'V.E.N.U.S. restablecido. Todos tus indicadores han vuelto a su estado armónico.';
+    const msg = 'V.E.N.U.S. restablecido a condiciones nominales de vuelo.';
     setLastSpokenText(msg);
     speakTacticalMessage(msg);
-    triggerNotification('Estado nominal restablecido ✨');
+    triggerNotification('Condiciones nominales restablecidas');
     recordAudit(
       'RULE-RESET-01',
-      'Restablecimiento manual por astronauta',
-      'Retorno a valores basales de bienestar.',
+      'Manual Reset to Nominal State',
+      'Telemetry returned to normal baseline values.',
       'NOMINAL'
     );
   }, [recordAudit]);
@@ -124,7 +124,7 @@ export const App: React.FC = () => {
     const idx = list.indexOf(activeLayer);
     const next = list[(idx + 1) % list.length];
     setActiveLayer(next);
-    triggerNotification(`Capa visual: ${next}`);
+    triggerNotification(`Capa visual activa: ${next}`);
   }, [activeLayer]);
 
   // Voice Command Dispatcher
@@ -134,10 +134,10 @@ export const App: React.FC = () => {
         handleLogPill();
         break;
       case 'DAILY_REPORT': {
-        const text = `Hola Elena. Tu índice de fluidez vascular está al ${vsi} por ciento. Presión ocular en ${Math.max(metrics.iopLeftEye, metrics.iopRightEye)} milímetros de mercurio. Tu cuerpo se adapta bien.`;
+        const text = `Reporte para la comandante Vance: Estado ${triageResult.status}. Índice de estasis vascular al ${vsi} por ciento. Presión intraocular en ${Math.max(metrics.iopLeftEye, metrics.iopRightEye)} milímetros de mercurio.`;
         setLastSpokenText(text);
         speakTacticalMessage(text);
-        triggerNotification('Resumen de bienestar emitido.');
+        triggerNotification('Reporte vocal emitido.');
         break;
       }
       case 'LAYER_VASCULAR':
@@ -172,12 +172,12 @@ export const App: React.FC = () => {
         break;
       case 'UNKNOWN':
       default:
-        speakTacticalMessage('No te he entendido con claridad, Elena. Puedes usar las opciones de la pantalla.');
+        speakTacticalMessage('Comando no reconocido en el léxico táctico.');
         break;
     }
-  }, [handleLogPill, handleSimulateEmergency, handleResetNominal, vsi, metrics]);
+  }, [handleLogPill, handleSimulateEmergency, handleResetNominal, triageResult.status, vsi, metrics]);
 
-  // Physical Hotkeys
+  // Physical Hotkeys (Space, P, V, Shift+D, R)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
@@ -202,7 +202,7 @@ export const App: React.FC = () => {
   }, [handleLogPill, cycleLayer, handleSimulateEmergency, handleResetNominal]);
 
   return (
-    <div className="min-h-screen bg-venus-950 text-slate-100 flex flex-col font-sans selection:bg-venus-rose selection:text-venus-950">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans selection:bg-white/[0.15]">
       {/* 1. Header HUD */}
       <MissionHUD
         astronaut={astronaut}
@@ -211,45 +211,44 @@ export const App: React.FC = () => {
         onOpenAuditDrawer={() => setIsAuditOpen(true)}
       />
 
-      {/* Floating Warm Notification Toast */}
+      {/* Minimal Toast Notification */}
       {notification && (
-        <div className="fixed top-20 right-6 z-40 bg-venus-900 border border-venus-rose/60 text-white px-4 py-3 rounded-2xl shadow-glow-rose flex items-center gap-2.5 text-xs font-medium animate-in fade-in slide-in-from-top-2">
-          <Sparkles className="w-4 h-4 text-venus-rose animate-pulse-gentle" />
+        <div className="fixed top-16 right-5 z-40 bg-canvas-card border border-border-subtle text-ink px-3.5 py-2 rounded shadow-elevated flex items-center gap-2 text-xs font-mono animate-in fade-in">
+          <Bell className="w-3.5 h-3.5 text-clinical-titanium" />
           <span>{notification}</span>
         </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-5">
-        {/* Differential Diagnosis Clinical Banner (Empathetic & Clear) */}
-        <div className={`p-5 rounded-3xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 backdrop-blur-xl transition-all duration-300 ${
+      {/* Main Grid Workspace */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-4">
+        {/* Differential Diagnosis Clinical Banner */}
+        <div className={`p-4 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-fine transition-all ${
           triageResult.status === 'CRITICAL_THROMBUS'
-            ? 'bg-venus-coral/15 border-venus-coral shadow-glow-coral'
+            ? 'bg-clinical-coral/10 border-clinical-coral/40'
             : triageResult.status === 'WARNING_SANS'
-            ? 'bg-venus-amber/15 border-venus-amber/60'
-            : 'bg-venus-900/60 border-venus-border shadow-soft-glass'
+            ? 'bg-clinical-honey/10 border-clinical-honey/30'
+            : 'bg-canvas-card border-border-hairline'
         }`}>
-          <div className="flex items-start gap-3.5">
-            <div className={`p-2.5 rounded-2xl border shrink-0 mt-0.5 ${
+          <div className="flex items-start gap-3">
+            <div className={`p-2 rounded border shrink-0 mt-0.5 ${
               triageResult.status === 'CRITICAL_THROMBUS'
-                ? 'bg-venus-coral/25 border-venus-coral text-venus-coral'
-                : 'bg-venus-rose/15 border-venus-rose/30 text-venus-rose'
+                ? 'bg-clinical-coral/20 border-clinical-coral/40 text-clinical-coral'
+                : 'bg-white/[0.04] border-border-hairline text-ink'
             }`}>
-              <HeartHandshake className="w-5 h-5" />
+              <Stethoscope className="w-4 h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs text-slate-400 font-semibold tracking-wide uppercase">
-                  Diagnóstico Fisiológico Inteligente (CDSS)
+              <div className="flex items-center gap-2 flex-wrap font-mono text-[11px]">
+                <span className="text-ink-muted uppercase tracking-wider">
+                  EDGE DIFFERENTIAL DIAGNOSIS (CDSS)
                 </span>
-                <span className="text-[10px] bg-venus-850 text-venus-blush px-2 py-0.5 rounded-full border border-venus-border">
-                  Confianza: {diagnosis.confidenceScore}%
-                </span>
+                <span className="text-ink-subtle">·</span>
+                <span className="text-ink">CONFIDENCE: {diagnosis.confidenceScore}%</span>
               </div>
-              <h2 className="text-sm md:text-base font-bold text-white mt-1">
+              <h2 className="text-sm font-sans font-bold text-ink mt-0.5">
                 {diagnosis.condition}
               </h2>
-              <p className="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
+              <p className="text-xs text-ink-muted mt-0.5 max-w-3xl leading-relaxed">
                 {diagnosis.etiology}
               </p>
             </div>
@@ -257,17 +256,17 @@ export const App: React.FC = () => {
 
           <button
             onClick={() => setCountermeasureModal({ isOpen: true, category: 'ULTRASOUND' })}
-            className="w-full md:w-auto px-5 py-2.5 bg-gradient-to-r from-venus-rose via-venus-orchid to-venus-purple hover:opacity-95 text-white font-semibold text-xs rounded-2xl shadow-glow-rose flex items-center justify-center gap-2 shrink-0 transition-all"
+            className="w-full md:w-auto px-4 py-2 bg-white/[0.08] hover:bg-white/[0.14] text-ink font-mono font-medium text-xs rounded border border-border-subtle shadow-fine flex items-center justify-center gap-1.5 shrink-0 transition-all"
           >
-            <span>Ver Protocolo de Cuidado</span>
-            <ChevronRight className="w-4 h-4" />
+            <span>ACTION PROTOCOL</span>
+            <ArrowUpRight className="w-3.5 h-3.5 text-ink-muted" />
           </button>
         </div>
 
         {/* Primary Two-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Column: Anatomical Avatar & Layer Selector (5 Cols) */}
-          <div className="lg:col-span-5 flex flex-col space-y-3.5">
+          <div className="lg:col-span-5 flex flex-col space-y-3">
             <LayerSelector activeLayer={activeLayer} onSelectLayer={setActiveLayer} />
             <InteractiveAvatar
               metrics={{ ...metrics, vascularStasisIndex: vsi }}
@@ -304,7 +303,7 @@ export const App: React.FC = () => {
             triggerNotification(msg);
             recordAudit(
               'RULE-COUNTERMEASURE-SUCCESS',
-              'Astronauta aplicó el cuidado sugerido',
+              'Astronaut executed prescribed clinical countermeasure',
               msg,
               'NOMINAL'
             );

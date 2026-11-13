@@ -1,11 +1,11 @@
 // ==============================================================================
-// V.E.N.U.S. Human-Centric Mission HUD Header
-// Empathetic, sensitive, and elegant aerospace healthcare
+// V.E.N.U.S. Architectural Mission Header
+// Designed with editorial restraint and aerospace engineering precision
 // ==============================================================================
 
 import React, { useState, useEffect } from 'react';
 import { AstronautProfile, TriageLevel, VitalMetrics } from '../../types';
-import { Heart, Sparkles, Clock, Wifi, Shield, Wind, Compass } from 'lucide-react';
+import { Radio, ShieldCheck, Clock, Wind, Radiation } from 'lucide-react';
 
 interface MissionHUDProps {
   astronaut: AstronautProfile;
@@ -33,94 +33,103 @@ export const MissionHUD: React.FC<MissionHUDProps> = ({
     const hours = Math.floor(totalSec / 3600) % 24;
     const mins = Math.floor((totalSec % 3600) / 60);
     const secs = totalSec % 60;
-    return `Día ${astronaut.missionDay} · ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    return `T+${astronaut.missionDay}D ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  const getTriagePill = () => {
+  const getTriageIndicator = () => {
     switch (triage) {
       case 'CRITICAL_THROMBUS':
         return (
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-venus-coral/15 border border-venus-coral/50 text-venus-coral shadow-glow-coral animate-pulse">
-            <span className="w-2 h-2 rounded-full bg-venus-coral" />
-            <span className="text-xs font-semibold tracking-wide">Atención Requerida: Cuidado Vascular Inmediato</span>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-clinical-coral/10 border border-clinical-coral/30 text-clinical-coral text-xs font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-clinical-coral animate-ping" />
+            <span className="font-medium tracking-wide">STATUS: IJV STASIS / INTERVENTION REQUIRED</span>
           </div>
         );
       case 'WARNING_SANS':
         return (
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-venus-amber/15 border border-venus-amber/40 text-venus-amber">
-            <span className="w-2 h-2 rounded-full bg-venus-amber" />
-            <span className="text-xs font-semibold tracking-wide">Observación: Aliviar Presión Ocular (SANS)</span>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-clinical-honey/10 border border-clinical-honey/30 text-clinical-honey text-xs font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-clinical-honey" />
+            <span className="font-medium tracking-wide">STATUS: SANS CEPHALIC CONGESTION</span>
           </div>
         );
       case 'CAUTION_STASIS':
         return (
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-venus-amber/10 border border-venus-amber/30 text-amber-200">
-            <span className="w-2 h-2 rounded-full bg-venus-amber/80" />
-            <span className="text-xs font-semibold tracking-wide">Cuidado Suave: Estasis Leve & Hidratación</span>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-clinical-honey/10 border border-clinical-honey/20 text-clinical-honey/90 text-xs font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-clinical-honey/70" />
+            <span className="font-medium tracking-wide">STATUS: MILD VENOUS SLUGGISHNESS</span>
           </div>
         );
       case 'NOMINAL':
       default:
         return (
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-venus-mint/15 border border-venus-mint/40 text-emerald-300 shadow-glow-mint">
-            <span className="w-2 h-2 rounded-full bg-venus-mint" />
-            <span className="text-xs font-semibold tracking-wide">En Armonía: Homeostasis Óptima</span>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-clinical-sage/10 border border-clinical-sage/30 text-clinical-sage text-xs font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-clinical-sage" />
+            <span className="font-medium tracking-wide">STATUS: FLIGHT HOMEOSTASIS NOMINAL</span>
           </div>
         );
     }
   };
 
   return (
-    <header className="w-full bg-venus-900/80 border-b border-venus-border backdrop-blur-xl sticky top-0 z-30 px-4 md:px-6 py-3.5 shadow-soft-glass">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        {/* Brand & Personal Greeting */}
-        <div className="flex items-center gap-3.5 w-full md:w-auto">
-          {/* Logo V.E.N.U.S. Warm Icon */}
-          <div className="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-venus-rose via-venus-orchid to-venus-purple p-0.5 shadow-glow-rose flex items-center justify-center shrink-0">
-            <div className="w-full h-full bg-venus-950 rounded-[14px] flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-venus-blush animate-pulse-gentle" />
-            </div>
-          </div>
-
-          <div>
+    <header className="w-full bg-canvas-subtle/95 border-b border-border-hairline sticky top-0 z-30 px-5 py-3 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        {/* Brand identity */}
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col">
             <div className="flex items-center gap-2.5">
-              <span className="font-sans font-extrabold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-venus-blush via-venus-rose to-venus-orchid">
+              <span className="font-sans font-bold text-base tracking-wider text-ink">
                 V.E.N.U.S.
               </span>
-              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-venus-rose/10 text-venus-blush border border-venus-rose/20">
-                Salud Femenina Espacial
+              <span className="text-[10px] font-mono tracking-wider px-1.5 py-0.5 rounded bg-white/[0.05] text-ink-muted border border-border-hairline">
+                NASA CLASS-A
               </span>
             </div>
-            <p className="text-xs text-slate-300 font-normal">
-              Hola, <strong className="text-white font-medium">{astronaut.name}</strong> · Misión Artemis VII (Marte)
-            </p>
+            <span className="text-[11px] text-ink-muted tracking-tight font-normal">
+              Autonomous Neuro-Endocrine & Vascular Telemetry · <span className="text-ink font-medium">{astronaut.name}</span>
+            </span>
           </div>
         </div>
 
-        {/* Central & Right telemetry widgets */}
-        <div className="flex flex-wrap items-center justify-end gap-3 w-full md:w-auto">
-          {/* Dynamic State Pill */}
-          {getTriagePill()}
-
-          {/* Mission MET clock with calm icon */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-venus-850/70 border border-venus-border text-xs text-slate-200">
-            <Clock className="w-3.5 h-3.5 text-venus-rose" />
-            <span className="font-mono text-slate-200">{formatMET(metSeconds)}</span>
+        {/* Flight telemetry row */}
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3.5">
+          {/* Earth Latency Warning (Edge Justification) */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-canvas-card border border-border-hairline text-xs font-mono text-ink-muted">
+            <Radio className="w-3.5 h-3.5 text-clinical-honey" />
+            <span>EARTH LATENCY:</span>
+            <span className="text-ink font-medium">14m 22s</span>
           </div>
 
-          {/* Earth Latency - Empathetic Edge computing statement */}
-          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-venus-850/70 border border-venus-border text-xs text-slate-300" title="A 14 minutos luz de la Tierra, V.E.N.U.S. procesa tus datos localmente en tiempo real">
-            <Wifi className="w-3.5 h-3.5 text-venus-teal" />
-            <span>Tierra: <span className="text-venus-teal font-medium">14m 22s</span> · Cuidado local</span>
+          {/* Cabin Atmosphere */}
+          <div className="hidden lg:flex items-center gap-3 px-2.5 py-1 rounded bg-canvas-card border border-border-hairline text-xs font-mono text-ink-muted">
+            <div className="flex items-center gap-1">
+              <Wind className="w-3.5 h-3.5 text-ink-subtle" />
+              <span>CO₂:</span>
+              <span className="text-ink font-medium">{metrics.cabinCO2mmHg.toFixed(1)} mmHg</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Radiation className="w-3.5 h-3.5 text-ink-subtle" />
+              <span>RAD:</span>
+              <span className="text-ink font-medium">{metrics.radiationCumulativeMSv.toFixed(1)} mSv</span>
+            </div>
           </div>
 
-          {/* Class-A Verification Pill */}
+          {/* Mission MET */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-canvas-card border border-border-hairline text-xs font-mono text-ink-muted">
+            <Clock className="w-3.5 h-3.5 text-clinical-titanium" />
+            <span className="text-ink font-medium">{formatMET(metSeconds)}</span>
+          </div>
+
+          {/* Triage indicator */}
+          {getTriageIndicator()}
+
+          {/* Audit Trail Drawer Trigger */}
           <button
             onClick={onOpenAuditDrawer}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl bg-venus-800/60 hover:bg-venus-700/80 text-venus-blush border border-venus-border transition-all hover:shadow-glow-rose"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded bg-white/[0.04] hover:bg-white/[0.08] text-ink-muted hover:text-ink border border-border-hairline transition-colors"
+            title="Inspect NASA Class-A Verifiable Audit Trace"
           >
-            <Shield className="w-3.5 h-3.5 text-venus-rose" />
-            <span className="font-medium">Certificado NASA</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-clinical-sage" />
+            <span>AUDIT TRACE</span>
           </button>
         </div>
       </div>

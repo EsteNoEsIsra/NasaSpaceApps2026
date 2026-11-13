@@ -1,9 +1,10 @@
 // ==============================================================================
-// V.E.N.U.S. Voice Control & Dual Tactical Hotkeys Interface (Warm & Friendly)
+// V.E.N.U.S. Audio Interface & Tactical Keyboard Controls
+// Industrial Teenage Engineering / Braun aesthetic: tactile, precise, zero-slop
 // ==============================================================================
 
 import React, { useState, useEffect } from 'react';
-import { Mic, MicOff, Sparkles, RefreshCw, AlertCircle, Flower2, Layers } from 'lucide-react';
+import { Mic, MicOff, RefreshCw, AlertTriangle, Layers, Pill } from 'lucide-react';
 import { parseSpokenIntent, speakTacticalMessage, SpeechCommandIntent } from '../../engine/speechEngine';
 
 interface VoiceControlBarProps {
@@ -28,7 +29,7 @@ export const VoiceControlBar: React.FC<VoiceControlBarProps> = ({
 
   const toggleListening = () => {
     if (!speechSupported) {
-      speakTacticalMessage('Control por voz no soportado en este navegador. Puedes usar los botones táctiles o el teclado.');
+      speakTacticalMessage('Control por voz no disponible en este navegador. Utilizando teclado táctico.');
       return;
     }
 
@@ -70,90 +71,94 @@ export const VoiceControlBar: React.FC<VoiceControlBarProps> = ({
   };
 
   return (
-    <div className="w-full bg-venus-900/80 border border-venus-border rounded-3xl p-3.5 backdrop-blur-xl shadow-soft-glass">
+    <div className="w-full bg-canvas-card border border-border-hairline rounded-xl p-3 shadow-fine">
       <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-        {/* Voice Microphone & Feedback */}
+        {/* Voice Microphone & Level Meter */}
         <div className="flex items-center gap-3 w-full md:w-auto">
           <button
             onClick={toggleListening}
-            className={`px-3.5 py-2.5 rounded-2xl border transition-all duration-300 flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded border transition-all duration-150 flex items-center gap-2 font-mono text-xs ${
               isListening
-                ? 'bg-venus-coral text-white border-white shadow-glow-coral animate-pulse'
-                : 'bg-venus-850 hover:bg-venus-800 border-venus-border text-venus-blush hover:shadow-glow-rose'
+                ? 'bg-clinical-coral/20 text-clinical-coral border-clinical-coral'
+                : 'bg-white/[0.04] hover:bg-white/[0.08] text-ink border-border-hairline'
             }`}
-            title="Activar asistente de voz para manos libres"
+            title="Toggle hands-free voice engine"
           >
-            {isListening ? <Mic className="w-4 h-4 animate-bounce" /> : <MicOff className="w-4 h-4" />}
-            <span className="text-xs font-semibold">
-              {isListening ? 'Escuchándote...' : 'Hablar con V.E.N.U.S.'}
+            {isListening ? <Mic className="w-3.5 h-3.5 animate-pulse" /> : <MicOff className="w-3.5 h-3.5 text-ink-muted" />}
+            <span className="font-medium">
+              {isListening ? 'LISTENING' : 'VOICE COMMAND'}
             </span>
           </button>
 
-          {/* Gentle Sound Wave Visualizer */}
-          <div className="flex items-center gap-1 h-6 px-2.5 bg-venus-950/80 rounded-xl border border-venus-border/40">
+          {/* LED Style Level Meter */}
+          <div className="flex items-center gap-1 h-4 px-2 bg-canvas rounded border border-border-hairline">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <span
                 key={i}
-                className={`w-1 rounded-full transition-all duration-300 ${
-                  isListening ? 'bg-venus-rose animate-pulse' : 'bg-venus-700 h-2'
+                className={`w-1 rounded-sm transition-all duration-150 ${
+                  isListening ? 'bg-clinical-sage' : 'bg-white/[0.12] h-2'
                 }`}
                 style={{
-                  height: isListening ? `${Math.floor(Math.random() * 16 + 6)}px` : '4px',
+                  height: isListening ? `${Math.floor(Math.random() * 12 + 4)}px` : '4px',
                 }}
               />
             ))}
           </div>
 
-          {/* Transcript / Spoken Output */}
-          <div className="text-xs text-slate-300 truncate max-w-sm">
+          {/* Audio Transcript / Feedback */}
+          <div className="text-xs font-mono text-ink-muted truncate max-w-sm">
             {transcript ? (
-              <span className="text-venus-blush font-medium">"{transcript}"</span>
+              <span className="text-ink">"{transcript}"</span>
             ) : lastSpokenText ? (
-              <span className="text-slate-300 italic">V.E.N.U.S: {lastSpokenText}</span>
+              <span className="text-ink-muted italic">V.E.N.U.S: {lastSpokenText}</span>
             ) : (
-              <span className="text-slate-400">Prueba: "VENUS, registrar pastilla" o "reporte"</span>
+              <span className="text-ink-subtle">"VENUS, registrar pastilla" · "reporte"</span>
             )}
           </div>
         </div>
 
-        {/* Demo Fast Action Pills (Pitch Friendly) */}
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-[11px] text-slate-400 mr-1 hidden sm:inline">Atajos Rápidos:</span>
+        {/* Tactile Keycap Buttons for Pitch Demo */}
+        <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+          <span className="text-[11px] text-ink-subtle mr-1 hidden sm:inline">PITCH KEYS:</span>
 
           <button
             onClick={() => onCommandReceived('LOG_PILL')}
-            className="px-3 py-1.5 bg-venus-rose/15 hover:bg-venus-rose/25 text-venus-blush border border-venus-rose/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
-            title="Tecla rápida: P o Espacio"
+            className="px-2.5 py-1 bg-white/[0.04] hover:bg-white/[0.08] text-ink border border-border-hairline rounded transition-all flex items-center gap-1.5"
+            title="Shortcut: P or Space"
           >
-            <Flower2 className="w-3.5 h-3.5 text-venus-rose" />
-            <span className="font-medium">Tomar Dosis [P]</span>
+            <span className="px-1 py-0.2 bg-canvas text-ink-muted rounded text-[10px] border border-border-hairline">P</span>
+            <Pill className="w-3.5 h-3.5 text-clinical-titanium" />
+            <span>RECORD PILL</span>
           </button>
 
           <button
             onClick={() => onCommandReceived('LAYER_VASCULAR')}
-            className="px-3 py-1.5 bg-venus-teal/15 hover:bg-venus-teal/25 text-emerald-200 border border-venus-teal/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
-            title="Tecla rápida: V"
+            className="px-2.5 py-1 bg-white/[0.04] hover:bg-white/[0.08] text-ink border border-border-hairline rounded transition-all flex items-center gap-1.5"
+            title="Shortcut: V"
           >
-            <Layers className="w-3.5 h-3.5 text-venus-teal" />
-            <span className="font-medium">Cambiar Capa [V]</span>
+            <span className="px-1 py-0.2 bg-canvas text-ink-muted rounded text-[10px] border border-border-hairline">V</span>
+            <Layers className="w-3.5 h-3.5 text-clinical-sage" />
+            <span>CYCLE LAYER</span>
           </button>
 
           <button
             onClick={() => onCommandReceived('SIMULATE_EMERGENCY')}
-            className="px-3 py-1.5 bg-venus-coral/20 hover:bg-venus-coral/30 text-white border border-venus-coral/60 rounded-xl transition-all flex items-center gap-1.5 shadow-glow-coral font-medium"
-            title="Tecla rápida: Shift + D"
+            className="px-2.5 py-1 bg-clinical-coral/10 hover:bg-clinical-coral/20 text-clinical-coral border border-clinical-coral/30 rounded transition-all flex items-center gap-1.5"
+            title="Shortcut: Shift + D"
           >
-            <AlertCircle className="w-3.5 h-3.5 text-venus-coral" />
-            <span>Simular Incidente [⇧D]</span>
+            <span className="px-1 py-0.2 bg-canvas text-clinical-coral rounded text-[10px] border border-clinical-coral/30">⇧D</span>
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span>SIMULATE STASIS</span>
           </button>
 
           <button
             onClick={() => onCommandReceived('RESET_NOMINAL')}
-            className="px-2.5 py-1.5 bg-venus-850 hover:bg-venus-800 text-slate-300 border border-venus-border rounded-xl transition-all flex items-center gap-1"
-            title="Tecla rápida: R"
+            className="px-2.5 py-1 bg-white/[0.04] hover:bg-white/[0.08] text-ink-muted hover:text-ink border border-border-hairline rounded transition-all flex items-center gap-1.5"
+            title="Shortcut: R"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-venus-teal" />
-            <span>Reset [R]</span>
+            <span className="px-1 py-0.2 bg-canvas text-ink-muted rounded text-[10px] border border-border-hairline">R</span>
+            <RefreshCw className="w-3 h-3 text-ink-muted" />
+            <span>RESET</span>
           </button>
         </div>
       </div>

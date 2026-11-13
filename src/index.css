@@ -4,48 +4,48 @@
 
 @layer base {
   body {
-    @apply bg-venus-950 text-slate-100 font-sans antialiased selection:bg-venus-rose selection:text-venus-950;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(232, 121, 249, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(52, 211, 153, 0.06) 0px, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(244, 114, 182, 0.04) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(192, 132, 252, 0.08) 0px, transparent 50%);
-    background-attachment: fixed;
+    @apply bg-canvas text-ink font-sans antialiased selection:bg-clinical-titanium selection:text-canvas;
+    background-color: #090a0f;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: -1px -1px;
   }
 }
 
-/* Glassmorphism Card Utility */
-.glass-panel {
-  background: rgba(22, 17, 42, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(244, 114, 182, 0.12);
-  box-shadow: 0 10px 30px -10px rgba(10, 8, 21, 0.5);
+/* Precision Aerospace Hairline Panels */
+.hairline-card {
+  background-color: #12151e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.glass-panel-glow {
-  background: rgba(26, 20, 51, 0.78);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(244, 114, 182, 0.25);
-  box-shadow: 0 0 30px -5px rgba(244, 114, 182, 0.15);
+.hairline-card-interactive {
+  background-color: #12151e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
-/* Custom Soft Scrollbar */
+.hairline-card-interactive:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+
+/* Minimalist Dark Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0815;
+  background: #090a0f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #251c47;
-  border-radius: 9999px;
+  background: #1e2230;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #f472b6;
+  background: #2f364a;
 }
