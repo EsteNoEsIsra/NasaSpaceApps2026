@@ -1,313 +1,284 @@
 // ==============================================================================
-// V.E.N.U.S. Multi-layer Vector Anatomical Avatar
-// Interactive SVG displaying Vascular, Ocular, and Endocrine sub-systems
+// V.E.N.U.S. Human-Centric & Sculpted Anatomical Avatar
+// Elegant feminine anatomical silhouette with organic luminous flow lines
 // ==============================================================================
 
 import React, { useState } from 'react';
-import { BodyLayer, VitalMetrics, TriageLevel } from '../../types';
-import { Activity, Eye, ShieldAlert, Heart, Zap } from 'lucide-react';
+import { BodyLayer, VitalMetrics } from '../../types';
+import { Heart, Sparkles, Eye, Flower2, Droplets, ChevronRight } from 'lucide-react';
 
 interface InteractiveAvatarProps {
   metrics: VitalMetrics;
-  triage: TriageLevel;
   activeLayer: BodyLayer;
   onOpenCountermeasure: (category: 'LBNP' | 'ULTRASOUND' | 'PHARMA' | 'HYDRATION') => void;
 }
 
-export type OrganId = 'JUGULAR' | 'OCULAR' | 'HEART' | 'ENDOCRINE' | 'FEMORAL';
+export type OrganId = 'ENDOCRINE' | 'JUGULAR' | 'OCULAR' | 'HEART' | 'HYDRATION';
 
 export const InteractiveAvatar: React.FC<InteractiveAvatarProps> = ({
   metrics,
-  triage,
   activeLayer,
   onOpenCountermeasure,
 }) => {
-  const [selectedOrgan, setSelectedOrgan] = useState<OrganId | null>('JUGULAR');
+  const [selectedOrgan, setSelectedOrgan] = useState<OrganId>('ENDOCRINE');
 
-  // Dynamic colors depending on triage and values
+  const isJugularSlow = metrics.jugularVeinVelocity < 8.0;
   const isJugularCritical = metrics.jugularVeinVelocity <= 2.0;
-  const isJugularCaution = metrics.jugularVeinVelocity < 10.0;
-  const jugularColor = isJugularCritical ? '#ff3366' : isJugularCaution ? '#fbbf24' : '#00f2fe';
+  const jugularColor = isJugularCritical ? '#fb7185' : isJugularSlow ? '#fbbf24' : '#2dd4bf';
 
-  const isOcularCritical = Math.max(metrics.iopLeftEye, metrics.iopRightEye) >= 22;
-  const ocularColor = isOcularCritical ? '#ff3366' : '#38bdf8';
+  const isOcularHigh = Math.max(metrics.iopLeftEye, metrics.iopRightEye) >= 21;
+  const ocularColor = isOcularHigh ? '#fb7185' : '#e879f9';
 
   const showVascular = activeLayer === 'ALL' || activeLayer === 'VASCULAR';
   const showOcular = activeLayer === 'ALL' || activeLayer === 'OCULAR';
   const showEndocrine = activeLayer === 'ALL' || activeLayer === 'ENDOCRINE';
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-4 bg-space-900/80 border border-space-800 rounded-xl overflow-hidden backdrop-blur shadow-2xl h-[530px]">
-      {/* Background Cyber Grid / Radar Rings */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-space-800/30 via-space-950/80 to-space-950 pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#15203b0a_1px,transparent_1px),linear-gradient(to_bottom,#15203b0a_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
+    <div className="relative flex flex-col items-center justify-between p-5 bg-venus-900/60 border border-venus-border rounded-3xl overflow-hidden backdrop-blur-xl shadow-soft-glass min-h-[520px]">
+      {/* Background Soft Aura Gradients */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-72 h-72 bg-gradient-to-tr from-venus-rose/10 via-venus-orchid/15 to-transparent rounded-full blur-3xl pointer-events-none animate-breathe" />
+      <div className="absolute bottom-10 right-10 w-48 h-48 bg-venus-teal/10 rounded-full blur-2xl pointer-events-none" />
 
-      {/* Top Scanner Header */}
-      <div className="absolute top-3 left-4 right-4 flex items-center justify-between text-[11px] font-mono text-slate-400 z-10 border-b border-space-800/80 pb-2">
+      {/* Top Header Card Info */}
+      <div className="w-full flex items-center justify-between text-xs text-slate-300 z-10 border-b border-venus-border/70 pb-3">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping-slow" />
-          <span className="text-cyan-300 font-semibold uppercase tracking-wider">BIO-TELEMETRY WIREFRAME</span>
+          <div className="w-2.5 h-2.5 rounded-full bg-venus-rose animate-pulse-gentle" />
+          <span className="font-medium text-venus-blush tracking-wide">Espejo Biológico Personal</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-slate-400">LAYER:</span>
-          <span className="text-white font-bold bg-space-800 px-2 py-0.5 rounded border border-space-700">
-            {activeLayer}
-          </span>
-        </div>
+        <span className="text-[11px] text-slate-400 bg-venus-850/80 px-2.5 py-1 rounded-full border border-venus-border/50">
+          Toca cualquier punto para explorar
+        </span>
       </div>
 
-      {/* SVG ANATOMICAL WIREFRAME */}
-      <div className="relative w-full h-[380px] max-w-[280px] mt-6 flex items-center justify-center">
+      {/* Elegant Sculpted Feminine Silhouette SVG */}
+      <div className="relative w-full h-[360px] max-w-[260px] my-2 flex items-center justify-center">
         <svg
-          viewBox="0 0 300 500"
-          className="w-full h-full drop-shadow-[0_0_15px_rgba(0,242,254,0.15)]"
+          viewBox="0 0 280 480"
+          className="w-full h-full drop-shadow-[0_0_25px_rgba(232,121,249,0.2)]"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            <linearGradient id="bodyOutline" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#1e2e54" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#0a0e1a" stopOpacity="0.3" />
+            {/* Soft body gradient */}
+            <linearGradient id="venusBody" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#251c47" stopOpacity="0.75" />
+              <stop offset="50%" stopColor="#1a1433" stopOpacity="0.45" />
+              <stop offset="100%" stopColor="#120e24" stopOpacity="0.8" />
             </linearGradient>
 
-            <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
+            {/* Radiant glow filters */}
+            <filter id="softGlowRose" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
 
-            <filter id="dangerGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="5" result="blur" />
+            <filter id="softGlowTeal" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
           </defs>
 
-          {/* 1. Base Silhouette / Wireframe */}
-          <g opacity="0.35" stroke="#38bdf8" strokeWidth="1.2" fill="url(#bodyOutline)">
-            {/* Cranium */}
-            <circle cx="150" cy="55" r="32" strokeDasharray="4 2" />
-            {/* Neck */}
-            <path d="M 140 85 L 140 105 L 160 105 L 160 85" fill="none" />
-            {/* Torso & Shoulders */}
-            <path d="M 100 120 C 120 105 180 105 200 120 L 195 240 C 185 260 115 260 105 240 Z" />
-            {/* Arms */}
-            <path d="M 100 120 L 70 210 L 55 290" strokeDasharray="3 3" fill="none" />
-            <path d="M 200 120 L 230 210 L 245 290" strokeDasharray="3 3" fill="none" />
-            {/* Pelvis & Legs */}
-            <path d="M 115 255 L 105 370 L 98 470" strokeDasharray="4 2" fill="none" />
-            <path d="M 185 255 L 195 370 L 202 470" strokeDasharray="4 2" fill="none" />
+          {/* 1. Sculpted, Harmonious Female Contours */}
+          <g stroke="rgba(244, 114, 182, 0.4)" strokeWidth="1.5" fill="url(#venusBody)">
+            {/* Head & Neck with graceful curves */}
+            <path d="M 140 35 C 160 35 170 50 170 70 C 170 85 158 98 148 102 L 148 120 L 132 120 L 132 102 C 122 98 110 85 110 70 C 110 50 120 35 140 35 Z" />
+
+            {/* Torso with feminine waist and hips */}
+            <path d="M 132 120 C 115 125 95 138 90 155 C 85 175 92 205 110 230 C 105 245 102 260 102 275 C 102 310 120 325 140 325 C 160 325 178 310 178 275 C 178 260 175 245 170 230 C 188 205 195 175 190 155 C 185 138 165 125 148 120 Z" />
+
+            {/* Graceful Arms */}
+            <path d="M 90 155 C 80 185 75 220 70 260" strokeDasharray="3 3" fill="none" opacity="0.6" />
+            <path d="M 190 155 C 200 185 205 220 210 260" strokeDasharray="3 3" fill="none" opacity="0.6" />
+
+            {/* Legs with gentle alignment */}
+            <path d="M 120 325 C 115 365 110 410 108 460" strokeDasharray="4 2" fill="none" opacity="0.7" />
+            <path d="M 160 325 C 165 365 170 410 172 460" strokeDasharray="4 2" fill="none" opacity="0.7" />
           </g>
 
-          {/* 2. VASCULAR LAYER (Internal Jugular, Heart, Vena Cava, Femoral) */}
+          {/* 2. VASCULAR LAYER - Ribbon flow paths */}
           {showVascular && (
-            <g id="vascular-layer" className="transition-all duration-500">
-              {/* Internal Jugular Veins (Neck left & right) */}
+            <g id="vascular-ribbons" className="transition-all duration-700">
+              {/* Internal Jugular Veins - gentle cervical arcs */}
               <g
                 className="cursor-pointer group"
                 onClick={() => setSelectedOrgan('JUGULAR')}
               >
-                {/* Right Jugular */}
+                {/* Left & Right Yugular flows */}
                 <path
-                  d="M 143 65 Q 142 85 145 115"
+                  d="M 135 68 Q 134 90 136 120"
                   stroke={jugularColor}
                   strokeWidth={isJugularCritical ? "5" : "3.5"}
-                  fill="none"
                   strokeLinecap="round"
-                  filter={isJugularCritical ? "url(#dangerGlow)" : "url(#cyanGlow)"}
-                  className={isJugularCritical ? "animate-pulse-fast" : ""}
+                  fill="none"
+                  filter="url(#softGlowTeal)"
                 />
-                {/* Left Jugular */}
                 <path
-                  d="M 157 65 Q 158 85 155 115"
+                  d="M 145 68 Q 146 90 144 120"
                   stroke={jugularColor}
                   strokeWidth={isJugularCritical ? "5" : "3.5"}
-                  fill="none"
                   strokeLinecap="round"
-                  filter={isJugularCritical ? "url(#dangerGlow)" : "url(#cyanGlow)"}
-                  className={isJugularCritical ? "animate-pulse-fast" : ""}
+                  fill="none"
+                  filter="url(#softGlowTeal)"
                 />
 
-                {/* Stasis Alert Ring if flow sluggish */}
-                {isJugularCritical && (
-                  <circle cx="150" cy="90" r="14" stroke="#ff3366" strokeWidth="2" fill="none" className="animate-ping-slow" />
-                )}
-
-                {/* Hotspot anchor */}
-                <circle cx="150" cy="90" r="5" fill={jugularColor} className="hover:scale-125 transition-transform" />
+                {/* Hotspot aura */}
+                <circle cx="140" cy="94" r="10" fill={jugularColor} opacity="0.25" className="animate-pulse-gentle" />
+                <circle cx="140" cy="94" r="4.5" fill={jugularColor} />
               </g>
 
-              {/* Heart & Central Vena Cava */}
+              {/* Heart Center - Warm Pulsation */}
               <g
                 className="cursor-pointer group"
                 onClick={() => setSelectedOrgan('HEART')}
               >
-                <path d="M 150 115 L 150 160" stroke="#00f2fe" strokeWidth="3" fill="none" opacity="0.8" />
-                <circle cx="150" cy="160" r="12" fill="#ff3366" opacity="0.8" className="animate-pulse" />
-                <circle cx="150" cy="160" r="16" stroke="#ff3366" strokeWidth="1.5" strokeDasharray="3 2" fill="none" />
-              </g>
-
-              {/* Femoral & Iliac Veins (DVT risk in microgravity) */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedOrgan('FEMORAL')}
-              >
-                <path d="M 150 240 L 125 340 L 115 420" stroke="#00f2fe" strokeWidth="2.5" fill="none" opacity="0.6" />
-                <path d="M 150 240 L 175 340 L 185 420" stroke="#00f2fe" strokeWidth="2.5" fill="none" opacity="0.6" />
-                <circle cx="125" cy="340" r="4" fill="#38bdf8" />
-                <circle cx="175" cy="340" r="4" fill="#38bdf8" />
+                <circle cx="140" cy="172" r="14" fill="#fb7185" opacity="0.2" className="animate-breathe" />
+                <circle cx="140" cy="172" r="8" fill="#fb7185" filter="url(#softGlowRose)" />
+                <path
+                  d="M 140 120 L 140 170 Q 140 210 140 250"
+                  stroke="#2dd4bf"
+                  strokeWidth="2"
+                  strokeDasharray="4 3"
+                  fill="none"
+                  opacity="0.6"
+                />
               </g>
             </g>
           )}
 
-          {/* 3. OCULAR LAYER (SANS / Optic Nerve Sheath) */}
+          {/* 3. OCULAR LAYER - Gentle SANS indicator */}
           {showOcular && (
             <g
-              id="ocular-layer"
-              className="cursor-pointer group transition-all duration-500"
+              id="ocular-lotus"
+              className="cursor-pointer group transition-all duration-700"
               onClick={() => setSelectedOrgan('OCULAR')}
             >
-              {/* Left & Right eyes */}
-              <circle cx="140" cy="50" r="5.5" stroke={ocularColor} strokeWidth="2" fill="#0f172a" />
-              <circle cx="160" cy="50" r="5.5" stroke={ocularColor} strokeWidth="2" fill="#0f172a" />
-              <circle cx="140" cy="50" r="2.5" fill={ocularColor} />
-              <circle cx="160" cy="50" r="2.5" fill={ocularColor} />
-
-              {/* Optic chiasm convergence */}
-              <path d="M 140 54 L 150 63 L 160 54" stroke={ocularColor} strokeWidth="1.5" fill="none" />
-
-              {/* SANS Edema Indicator if IOP high */}
-              {isOcularCritical && (
-                <circle cx="150" cy="52" r="18" stroke="#ff3366" strokeWidth="1.5" fill="none" className="animate-ping-slow" />
-              )}
+              <ellipse cx="132" cy="65" rx="5" ry="3.5" fill={ocularColor} opacity="0.9" />
+              <ellipse cx="148" cy="65" rx="5" ry="3.5" fill={ocularColor} opacity="0.9" />
+              <circle cx="140" cy="65" r="9" stroke={ocularColor} strokeWidth="1" strokeDasharray="2 2" fill="none" opacity="0.6" />
             </g>
           )}
 
-          {/* 4. ENDOCRINE LAYER (Pituitary & Ovaries / Hormonal Depot) */}
+          {/* 4. ENDOCRINE LAYER - Hormonal Center & Pituitary */}
           {showEndocrine && (
             <g
-              id="endocrine-layer"
-              className="cursor-pointer group transition-all duration-500"
+              id="endocrine-harmony"
+              className="cursor-pointer group transition-all duration-700"
               onClick={() => setSelectedOrgan('ENDOCRINE')}
             >
               {/* Pituitary Master Gland in Brain */}
-              <circle cx="150" cy="42" r="4" fill="#c084fc" filter="url(#cyanGlow)" />
-              <circle cx="150" cy="42" r="8" stroke="#c084fc" strokeWidth="1" strokeDasharray="2 2" fill="none" />
+              <circle cx="140" cy="52" r="5" fill="#f472b6" filter="url(#softGlowRose)" className="animate-pulse-gentle" />
 
-              {/* Ovarian hormonal cycle receptor sites in Pelvis */}
-              <circle cx="135" cy="245" r="6" fill="#a855f7" opacity="0.9" />
-              <circle cx="165" cy="245" r="6" fill="#a855f7" opacity="0.9" />
-              <path d="M 135 245 Q 150 252 165 245" stroke="#c084fc" strokeWidth="1.5" fill="none" />
+              {/* Ovarian & Hormonal Cycle Center */}
+              <g transform="translate(140, 275)">
+                <circle cx="0" cy="0" r="16" fill="#f472b6" opacity="0.18" className="animate-breathe" />
+                <circle cx="-16" cy="0" r="6" fill="#c084fc" filter="url(#softGlowRose)" />
+                <circle cx="16" cy="0" r="6" fill="#c084fc" filter="url(#softGlowRose)" />
+                <path d="M -16 0 Q 0 8 16 0" stroke="#f472b6" strokeWidth="1.5" fill="none" />
 
-              {/* Pill status badge on abdomen */}
-              <rect
-                x="142"
-                y="215"
-                width="16"
-                height="8"
-                rx="4"
-                fill={metrics.dailyPillTaken ? '#00f5a0' : '#ff3366'}
-                stroke="#ffffff"
-                strokeWidth="1"
-              />
+                {/* Daily Pill Token */}
+                <rect
+                  x="-9"
+                  y="-18"
+                  width="18"
+                  height="9"
+                  rx="4.5"
+                  fill={metrics.dailyPillTaken ? '#34d399' : '#f472b6'}
+                  stroke="#ffffff"
+                  strokeWidth="1.2"
+                />
+              </g>
             </g>
           )}
         </svg>
       </div>
 
-      {/* Selected Organ Diagnostic Drawer at Bottom */}
-      <div className="w-full mt-auto pt-3 border-t border-space-800 z-10">
-        {selectedOrgan === 'JUGULAR' && (
-          <div className="flex items-center justify-between text-xs font-mono">
-            <div>
-              <div className="flex items-center gap-1.5 text-slate-300 font-bold">
-                <Activity className="w-4 h-4 text-cyan-400" />
-                <span>INTERNAL JUGULAR VEIN (IJV)</span>
+      {/* Bottom Contextual Insight Box (Empathetic & Clear) */}
+      <div className="w-full mt-2 pt-3 border-t border-venus-border/70 z-10 bg-venus-950/40 rounded-2xl p-3">
+        {selectedOrgan === 'ENDOCRINE' && (
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-start gap-2.5">
+              <div className="p-2 bg-venus-rose/15 rounded-xl text-venus-rose mt-0.5">
+                <Flower2 className="w-4 h-4" />
               </div>
-              <p className="text-[11px] text-slate-400">
-                Velocity: <span className={`font-bold ${isJugularCritical ? 'text-hud-red' : 'text-hud-cyan'}`}>{metrics.jugularVeinVelocity} cm/s</span>
-                {isJugularCritical ? ' (STASIS / RETROGRADE RISK)' : ' (Laminar Flow)'}
-              </p>
+              <div>
+                <span className="text-xs font-semibold text-white block">Ciclo & Eje Hormonal</span>
+                <p className="text-[11px] text-slate-300">
+                  {metrics.dailyPillTaken
+                    ? 'Dosis diaria tomada · Carga de estrógeno equilibrada al ' + metrics.estrogenLoadIndex + '%'
+                    : 'Recordatorio pendiente: Toca registrar para mantener tu ciclo estable.'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => onOpenCountermeasure('PHARMA')}
+              className="px-3 py-1.5 text-xs font-medium bg-venus-rose/20 hover:bg-venus-rose/30 border border-venus-rose/50 text-venus-blush rounded-xl transition-all shrink-0 flex items-center gap-1"
+            >
+              <span>Ver Rutina</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {selectedOrgan === 'JUGULAR' && (
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-start gap-2.5">
+              <div className="p-2 bg-venus-teal/15 rounded-xl text-venus-teal mt-0.5">
+                <Droplets className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-xs font-semibold text-white block">Circulación Yugular Interna</span>
+                <p className="text-[11px] text-slate-300">
+                  Flujo: <strong className={isJugularSlow ? 'text-venus-coral font-bold' : 'text-emerald-300 font-bold'}>{metrics.jugularVeinVelocity} cm/s</strong>
+                  {isJugularSlow ? ' · Se recomienda sesión de alivio venoso' : ' · Retorno venoso adecuado hacia el corazón'}
+                </p>
+              </div>
             </div>
             <button
               onClick={() => onOpenCountermeasure('ULTRASOUND')}
-              className="px-2.5 py-1 text-[11px] font-mono bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500 text-cyan-300 rounded transition-all"
+              className="px-3 py-1.5 text-xs font-medium bg-venus-teal/20 hover:bg-venus-teal/30 border border-venus-teal/50 text-emerald-200 rounded-xl transition-all shrink-0 flex items-center gap-1"
             >
-              SCAN IJV
+              <span>Ecografía Suave</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
 
         {selectedOrgan === 'OCULAR' && (
-          <div className="flex items-center justify-between text-xs font-mono">
-            <div>
-              <div className="flex items-center gap-1.5 text-slate-300 font-bold">
-                <Eye className="w-4 h-4 text-amber-400" />
-                <span>SANS / RETINAL SHEATH</span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-start gap-2.5">
+              <div className="p-2 bg-venus-amber/15 rounded-xl text-venus-amber mt-0.5">
+                <Eye className="w-4 h-4" />
               </div>
-              <p className="text-[11px] text-slate-400">
-                IOP L/R: <span className={`font-bold ${isOcularCritical ? 'text-hud-red' : 'text-hud-green'}`}>{metrics.iopLeftEye} / {metrics.iopRightEye} mmHg</span>
-              </p>
+              <div>
+                <span className="text-xs font-semibold text-white block">Salud Ocular & Visión (SANS)</span>
+                <p className="text-[11px] text-slate-300">
+                  Presión: <strong className="text-amber-200">{metrics.iopLeftEye} / {metrics.iopRightEye} mmHg</strong> · Protegiendo la retina de la microgravedad
+                </p>
+              </div>
             </div>
             <button
               onClick={() => onOpenCountermeasure('LBNP')}
-              className="px-2.5 py-1 text-[11px] font-mono bg-amber-950/80 hover:bg-amber-900 border border-amber-500 text-amber-300 rounded transition-all"
+              className="px-3 py-1.5 text-xs font-medium bg-venus-amber/20 hover:bg-venus-amber/30 border border-venus-amber/50 text-amber-200 rounded-xl transition-all shrink-0 flex items-center gap-1"
             >
-              START LBNP
-            </button>
-          </div>
-        )}
-
-        {selectedOrgan === 'ENDOCRINE' && (
-          <div className="flex items-center justify-between text-xs font-mono">
-            <div>
-              <div className="flex items-center gap-1.5 text-slate-300 font-bold">
-                <ShieldAlert className="w-4 h-4 text-purple-400" />
-                <span>ENDOCRINE & SUPPRESSION CYCLE</span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Active Load: <span className="font-bold text-purple-300">{metrics.estrogenLoadIndex}%</span> | Pill:{' '}
-                <span className={metrics.dailyPillTaken ? 'text-hud-green font-bold' : 'text-hud-red font-bold'}>
-                  {metrics.dailyPillTaken ? 'LOGGED' : 'PENDING'}
-                </span>
-              </p>
-            </div>
-            <button
-              onClick={() => onOpenCountermeasure('PHARMA')}
-              className="px-2.5 py-1 text-[11px] font-mono bg-purple-950/80 hover:bg-purple-900 border border-purple-500 text-purple-300 rounded transition-all"
-            >
-              REGIMEN
+              <span>Aliviar Ojos</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
 
         {selectedOrgan === 'HEART' && (
-          <div className="flex items-center justify-between text-xs font-mono">
-            <div>
-              <div className="flex items-center gap-1.5 text-slate-300 font-bold">
-                <Heart className="w-4 h-4 text-hud-red" />
-                <span>CARDIAC PUMP & PERFUSION</span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-start gap-2.5">
+              <div className="p-2 bg-venus-coral/15 rounded-xl text-venus-coral mt-0.5">
+                <Heart className="w-4 h-4" />
               </div>
-              <p className="text-[11px] text-slate-400">
-                HR: <span className="text-white font-bold">{metrics.heartRate} bpm</span> | BP: {metrics.bloodPressureSys}/{metrics.bloodPressureDia} mmHg
-              </p>
-            </div>
-            <span className="text-[10px] text-slate-500">NOMINAL PUMP</span>
-          </div>
-        )}
-
-        {selectedOrgan === 'FEMORAL' && (
-          <div className="flex items-center justify-between text-xs font-mono">
-            <div>
-              <div className="flex items-center gap-1.5 text-slate-300 font-bold">
-                <Zap className="w-4 h-4 text-cyan-400" />
-                <span>FEMORAL VENOUS BED (DVT CHECK)</span>
+              <div>
+                <span className="text-xs font-semibold text-white block">Ritmo Cardíaco & Serenidad</span>
+                <p className="text-[11px] text-slate-300">
+                  {metrics.heartRate} lpm · Presión arterial serena {metrics.bloodPressureSys}/{metrics.bloodPressureDia} mmHg
+                </p>
               </div>
-              <p className="text-[11px] text-slate-400">Lower extremity microgravity pooling index: Nominal</p>
             </div>
-            <button
-              onClick={() => onOpenCountermeasure('HYDRATION')}
-              className="px-2.5 py-1 text-[11px] font-mono bg-space-800 hover:bg-space-700 border border-space-600 text-slate-200 rounded transition-all"
-            >
-              HYDRATION
-            </button>
+            <span className="text-xs text-emerald-300 font-medium">Ritmo Estable</span>
           </div>
         )}
       </div>

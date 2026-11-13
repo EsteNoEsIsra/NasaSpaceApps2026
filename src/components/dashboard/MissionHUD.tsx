@@ -1,10 +1,11 @@
 // ==============================================================================
-// V.E.N.U.S. Mission Tactical HUD Header
+// V.E.N.U.S. Human-Centric Mission HUD Header
+// Empathetic, sensitive, and elegant aerospace healthcare
 // ==============================================================================
 
 import React, { useState, useEffect } from 'react';
 import { AstronautProfile, TriageLevel, VitalMetrics } from '../../types';
-import { Radio, AlertTriangle, ShieldCheck, Clock, Compass, Activity, Wind } from 'lucide-react';
+import { Heart, Sparkles, Clock, Wifi, Shield, Wind, Compass } from 'lucide-react';
 
 interface MissionHUDProps {
   astronaut: AstronautProfile;
@@ -21,7 +22,6 @@ export const MissionHUD: React.FC<MissionHUDProps> = ({
 }) => {
   const [metSeconds, setMetSeconds] = useState(14 * 3600 + 48 * 60 + 12);
 
-  // Tick MET clock
   useEffect(() => {
     const timer = setInterval(() => {
       setMetSeconds((prev) => prev + 1);
@@ -33,107 +33,94 @@ export const MissionHUD: React.FC<MissionHUDProps> = ({
     const hours = Math.floor(totalSec / 3600) % 24;
     const mins = Math.floor((totalSec % 3600) / 60);
     const secs = totalSec % 60;
-    return `DAY ${astronaut.missionDay} — ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    return `Día ${astronaut.missionDay} · ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  const getTriageBadge = () => {
+  const getTriagePill = () => {
     switch (triage) {
       case 'CRITICAL_THROMBUS':
         return (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-950/80 border border-hud-red text-hud-red rounded-lg animate-pulse">
-            <AlertTriangle className="w-4 h-4 text-hud-red" />
-            <span className="font-mono font-bold text-xs tracking-wider">LEVEL 3: CRITICAL STASIS / THROMBUS HAZARD</span>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-venus-coral/15 border border-venus-coral/50 text-venus-coral shadow-glow-coral animate-pulse">
+            <span className="w-2 h-2 rounded-full bg-venus-coral" />
+            <span className="text-xs font-semibold tracking-wide">Atención Requerida: Cuidado Vascular Inmediato</span>
           </div>
         );
       case 'WARNING_SANS':
         return (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-950/80 border border-hud-amber text-hud-amber rounded-lg">
-            <AlertTriangle className="w-4 h-4 text-hud-amber" />
-            <span className="font-mono font-bold text-xs tracking-wider">LEVEL 2: SANS ELEVATION DETECTED</span>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-venus-amber/15 border border-venus-amber/40 text-venus-amber">
+            <span className="w-2 h-2 rounded-full bg-venus-amber" />
+            <span className="text-xs font-semibold tracking-wide">Observación: Aliviar Presión Ocular (SANS)</span>
           </div>
         );
       case 'CAUTION_STASIS':
         return (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-950/70 border border-yellow-500 text-yellow-300 rounded-lg">
-            <AlertTriangle className="w-4 h-4 text-yellow-400" />
-            <span className="font-mono font-bold text-xs tracking-wider">LEVEL 1: MODERATE VENOUS STASIS</span>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-venus-amber/10 border border-venus-amber/30 text-amber-200">
+            <span className="w-2 h-2 rounded-full bg-venus-amber/80" />
+            <span className="text-xs font-semibold tracking-wide">Cuidado Suave: Estasis Leve & Hidratación</span>
           </div>
         );
       case 'NOMINAL':
       default:
         return (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-950/60 border border-hud-green text-hud-green rounded-lg">
-            <ShieldCheck className="w-4 h-4 text-hud-green" />
-            <span className="font-mono font-bold text-xs tracking-wider">LEVEL 0: NOMINAL FLIGHT HOMEOSTASIS</span>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-venus-mint/15 border border-venus-mint/40 text-emerald-300 shadow-glow-mint">
+            <span className="w-2 h-2 rounded-full bg-venus-mint" />
+            <span className="text-xs font-semibold tracking-wide">En Armonía: Homeostasis Óptima</span>
           </div>
         );
     }
   };
 
   return (
-    <header className="w-full bg-space-900/95 border-b border-space-800 backdrop-blur sticky top-0 z-30 px-4 py-3 shadow-xl">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-        {/* Brand & Mission Tag */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.4)] border border-cyan-300">
-            <Activity className="w-6 h-6 text-space-950" />
+    <header className="w-full bg-venus-900/80 border-b border-venus-border backdrop-blur-xl sticky top-0 z-30 px-4 md:px-6 py-3.5 shadow-soft-glass">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* Brand & Personal Greeting */}
+        <div className="flex items-center gap-3.5 w-full md:w-auto">
+          {/* Logo V.E.N.U.S. Warm Icon */}
+          <div className="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-venus-rose via-venus-orchid to-venus-purple p-0.5 shadow-glow-rose flex items-center justify-center shrink-0">
+            <div className="w-full h-full bg-venus-950 rounded-[14px] flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-venus-blush animate-pulse-gentle" />
+            </div>
           </div>
+
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-black text-lg tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-200 to-white">
+            <div className="flex items-center gap-2.5">
+              <span className="font-sans font-extrabold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-venus-blush via-venus-rose to-venus-orchid">
                 V.E.N.U.S.
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-space-800 text-cyan-300 border border-space-700">
-                NASA CLASS-A
+              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-venus-rose/10 text-venus-blush border border-venus-rose/20">
+                Salud Femenina Espacial
               </span>
             </div>
-            <p className="text-[11px] font-mono text-slate-400">
-              Visual Engine for Neuro-endocrine & Universal Systems
+            <p className="text-xs text-slate-300 font-normal">
+              Hola, <strong className="text-white font-medium">{astronaut.name}</strong> · Misión Artemis VII (Marte)
             </p>
           </div>
         </div>
 
-        {/* Telemetry Status Pill & Mission Clock */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Earth Latency Warning (Justifies Edge Computing) */}
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-space-850 border border-space-700 rounded-lg text-[11px] font-mono text-slate-300">
-            <Radio className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-            <span>EARTH LATENCY:</span>
-            <span className="text-amber-300 font-bold">14m 22s (EDGE AUTONOMOUS)</span>
+        {/* Central & Right telemetry widgets */}
+        <div className="flex flex-wrap items-center justify-end gap-3 w-full md:w-auto">
+          {/* Dynamic State Pill */}
+          {getTriagePill()}
+
+          {/* Mission MET clock with calm icon */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-venus-850/70 border border-venus-border text-xs text-slate-200">
+            <Clock className="w-3.5 h-3.5 text-venus-rose" />
+            <span className="font-mono text-slate-200">{formatMET(metSeconds)}</span>
           </div>
 
-          {/* Cabin Atmosphere */}
-          <div className="hidden xl:flex items-center gap-3 px-3 py-1 bg-space-850 border border-space-700 rounded-lg text-[11px] font-mono text-slate-300">
-            <div className="flex items-center gap-1" title="Cabin CO2 level in mmHg">
-              <Wind className="w-3.5 h-3.5 text-cyan-400" />
-              <span>CO₂:</span>
-              <span className={`font-bold ${metrics.cabinCO2mmHg > 3.5 ? 'text-hud-red' : 'text-slate-100'}`}>
-                {metrics.cabinCO2mmHg.toFixed(1)} mmHg
-              </span>
-            </div>
-            <div className="flex items-center gap-1" title="Cumulative Radiation">
-              <Compass className="w-3.5 h-3.5 text-purple-400" />
-              <span>RAD:</span>
-              <span className="text-slate-100 font-bold">{metrics.radiationCumulativeMSv.toFixed(1)} mSv</span>
-            </div>
+          {/* Earth Latency - Empathetic Edge computing statement */}
+          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-venus-850/70 border border-venus-border text-xs text-slate-300" title="A 14 minutos luz de la Tierra, V.E.N.U.S. procesa tus datos localmente en tiempo real">
+            <Wifi className="w-3.5 h-3.5 text-venus-teal" />
+            <span>Tierra: <span className="text-venus-teal font-medium">14m 22s</span> · Cuidado local</span>
           </div>
 
-          {/* MET Clock */}
-          <div className="flex items-center gap-2 px-3 py-1 bg-space-850 border border-space-700 rounded-lg text-xs font-mono text-slate-200">
-            <Clock className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="font-bold text-cyan-300">{formatMET(metSeconds)}</span>
-          </div>
-
-          {/* Dynamic Triage Pill */}
-          {getTriageBadge()}
-
-          {/* Class-A Audit Drawer Trigger */}
+          {/* Class-A Verification Pill */}
           <button
             onClick={onOpenAuditDrawer}
-            className="px-2.5 py-1.5 text-xs font-mono bg-space-800 hover:bg-space-700 border border-space-600 hover:border-cyan-400 text-slate-200 rounded-lg transition-all"
-            title="Open Class-A Verifiable Execution Trace"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl bg-venus-800/60 hover:bg-venus-700/80 text-venus-blush border border-venus-border transition-all hover:shadow-glow-rose"
           >
-            AUDIT TRACE
+            <Shield className="w-3.5 h-3.5 text-venus-rose" />
+            <span className="font-medium">Certificado NASA</span>
           </button>
         </div>
       </div>

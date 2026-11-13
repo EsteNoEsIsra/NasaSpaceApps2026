@@ -1,10 +1,9 @@
 // ==============================================================================
-// V.E.N.U.S. Countermeasures & Treatment Protocols Modal
-// Actionable Clinical Guidance: LBNP, Ultrasound Probe, Pharma, Hydration
+// V.E.N.U.S. Countermeasures & Care Protocols Modal (Gentle & Guided Healthcare)
 // ==============================================================================
 
 import React, { useState } from 'react';
-import { X, Play, Activity, Droplet, Pill, ShieldAlert } from 'lucide-react';
+import { X, Play, Activity, Droplets, Flower2, Sparkles, Check, Heart, Shield } from 'lucide-react';
 
 interface CountermeasuresModalProps {
   initialCategory: 'LBNP' | 'ULTRASOUND' | 'PHARMA' | 'HYDRATION';
@@ -22,141 +21,140 @@ export const CountermeasuresModal: React.FC<CountermeasuresModalProps> = ({
   const [compressionTested, setCompressionTested] = useState(false);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-space-950/80 backdrop-blur-md">
-      <div className="relative w-full max-w-3xl bg-space-900 border border-cyan-500/40 rounded-2xl shadow-[0_0_40px_rgba(0,242,254,0.2)] overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-venus-950/80 backdrop-blur-md">
+      <div className="relative w-full max-w-3xl bg-venus-900 border border-venus-border rounded-3xl shadow-soft-glass overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-space-800 bg-space-850">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-cyan-950 border border-cyan-500/50 rounded-lg text-cyan-300">
-              <ShieldAlert className="w-5 h-5" />
+        <div className="flex items-center justify-between px-6 py-5 border-b border-venus-border bg-venus-850/80">
+          <div className="flex items-center gap-3.5">
+            <div className="p-2.5 bg-venus-rose/15 border border-venus-rose/30 rounded-2xl text-venus-rose shadow-glow-rose">
+              <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-mono font-bold text-white tracking-wide">
-                AUTONOMOUS MEDICAL COUNTERMEASURES // NASA PROTOCOL
+              <h2 className="text-base font-bold text-white tracking-wide">
+                Guía de Bienestar y Alivio Fisiológico
               </h2>
-              <p className="text-xs font-mono text-slate-400">
-                Class-A Guided Intervention System for Artemis & Mars Crews
+              <p className="text-xs text-slate-300">
+                Protocolos autónomos diseñados con calma para la tripulación de Artemis
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-space-800 transition-colors"
+            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-venus-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-space-800 bg-space-950/60 px-6 gap-2 pt-2">
+        <div className="flex border-b border-venus-border bg-venus-950/60 px-6 gap-2 pt-3 overflow-x-auto">
           <button
             onClick={() => setActiveTab('ULTRASOUND')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono border-b-2 font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-2xl transition-all border-b-2 ${
               activeTab === 'ULTRASOUND'
-                ? 'border-cyan-400 text-cyan-300 bg-cyan-950/30'
+                ? 'border-venus-teal text-emerald-200 bg-venus-teal/10'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Activity className="w-4 h-4" />
-            <span>1. IJV ULTRASOUND SCAN</span>
+            <Activity className="w-4 h-4 text-venus-teal" />
+            <span>1. Ecografía Yugular</span>
           </button>
 
           <button
             onClick={() => setActiveTab('LBNP')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono border-b-2 font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-2xl transition-all border-b-2 ${
               activeTab === 'LBNP'
-                ? 'border-amber-400 text-amber-300 bg-amber-950/30'
+                ? 'border-venus-amber text-amber-200 bg-venus-amber/10'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Play className="w-4 h-4" />
-            <span>2. LBNP CHAMBER (-35 mmHg)</span>
+            <Play className="w-4 h-4 text-venus-amber" />
+            <span>2. Descompresión LBNP</span>
           </button>
 
           <button
             onClick={() => setActiveTab('PHARMA')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono border-b-2 font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-2xl transition-all border-b-2 ${
               activeTab === 'PHARMA'
-                ? 'border-purple-400 text-purple-300 bg-purple-950/30'
+                ? 'border-venus-rose text-venus-blush bg-venus-rose/10'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Pill className="w-4 h-4" />
-            <span>3. PHARMA & ENOXAPARIN</span>
+            <Flower2 className="w-4 h-4 text-venus-rose" />
+            <span>3. Farmacología & Ciclo</span>
           </button>
 
           <button
             onClick={() => setActiveTab('HYDRATION')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono border-b-2 font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-2xl transition-all border-b-2 ${
               activeTab === 'HYDRATION'
-                ? 'border-emerald-400 text-emerald-300 bg-emerald-950/30'
+                ? 'border-venus-teal text-teal-200 bg-venus-teal/10'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Droplet className="w-4 h-4" />
-            <span>4. ELECTROLYTES</span>
+            <Droplets className="w-4 h-4 text-venus-teal" />
+            <span>4. Hidratación Salina</span>
           </button>
         </div>
 
         {/* Tab Content */}
-        <div className="p-6 overflow-y-auto space-y-4 font-mono text-xs text-slate-300">
-          {/* TAB 1: ULTRASOUND PROTOCOL */}
+        <div className="p-6 overflow-y-auto space-y-4 text-xs text-slate-300">
+          {/* TAB 1: ULTRASOUND */}
           {activeTab === 'ULTRASOUND' && (
             <div className="space-y-4">
-              <div className="p-3.5 bg-space-850 border border-cyan-500/30 rounded-xl">
-                <span className="text-cyan-300 font-bold block mb-1">
-                  OBJECTIVE: ASSESS INTERNAL JUGULAR VEIN (IJV) PATENCY & RULE OUT THROMBUS
+              <div className="p-4 bg-venus-850/70 border border-venus-teal/30 rounded-2xl">
+                <span className="text-emerald-200 font-bold block mb-1">
+                  Propósito: Verificar el flujo libre y descartar retención en la vena yugular
                 </span>
-                <p className="text-slate-400 text-[11px]">
-                  Use handheld ultrasound (Butterfly iQ / GE Vivid) in vascular preset. Perform transverse compression ultrasound and spectral Doppler flow analysis.
+                <p className="text-slate-300 text-[12px] leading-relaxed">
+                  Toma tu sonda de ultrasonido portátil Butterfly iQ. Con suaves movimientos sobre el lateral del cuello, comprobaremos que la sangre fluya con normalidad hacia el pecho.
                 </p>
               </div>
 
-              {/* Ultrasound Simulation Viewer */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-space-950 border border-space-800 rounded-xl relative overflow-hidden flex flex-col items-center justify-center h-52">
-                  <div className="text-[10px] text-slate-500 absolute top-2 left-2">ULTRASOUND B-MODE // SIMULATED</div>
-                  
-                  {/* Simulated Vein Cross Section */}
-                  <div className="relative w-36 h-36 rounded-full border-2 border-cyan-400 flex items-center justify-center bg-cyan-950/40">
+                {/* Visual probe feedback */}
+                <div className="p-4 bg-venus-950/80 border border-venus-border rounded-2xl flex flex-col items-center justify-center h-56 relative">
+                  <div className="text-[11px] text-slate-400 absolute top-3 left-4">VISTA ECOGRÁFICA GUIADA</div>
+
+                  <div className="relative w-36 h-36 rounded-full border-2 border-venus-teal/60 flex items-center justify-center bg-venus-teal/10 shadow-glow-mint">
                     <div className={`w-28 h-28 rounded-full transition-all duration-500 flex items-center justify-center ${
-                      compressionTested ? 'scale-y-25 bg-cyan-500/50' : 'bg-slate-900'
+                      compressionTested ? 'scale-y-20 bg-venus-teal/50' : 'bg-venus-900'
                     }`}>
-                      <span className="text-[10px] text-cyan-200 font-bold">
-                        {compressionTested ? 'COLLAPSED (NO CLOT)' : 'IJV LUMEN'}
+                      <span className="text-[11px] text-emerald-100 font-semibold text-center px-2">
+                        {compressionTested ? 'Vena colapsa libremente (Sin coágulo ✓)' : 'Lumen de Vena Yugular'}
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] text-slate-400 mt-2">
-                    {compressionTested ? 'Full wall coaptation verified: Clot ruled out in this segment.' : 'Click "TEST COMPRESSION" to apply probe pressure.'}
+                  <span className="text-[11px] text-slate-400 mt-3 text-center">
+                    {compressionTested ? 'Excelente: la vena responde con elasticidad.' : 'Haz clic en el botón para simular una suave compresión con la sonda.'}
                   </span>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="p-3 bg-space-850 border border-space-800 rounded-lg">
-                    <span className="text-white font-bold block">Step 1: Probe Positioning</span>
-                    <p className="text-slate-400 text-[11px] mt-0.5">
-                      Place high-frequency linear transducer at mid-neck level, anterolateral to the carotid artery pulsation.
+                <div className="space-y-2.5">
+                  <div className="p-3.5 bg-venus-850 border border-venus-border rounded-xl">
+                    <span className="text-white font-semibold block">Paso 1: Colocación</span>
+                    <p className="text-slate-300 text-[11px] mt-1">
+                      Aplica una gota de gel y apoya la sonda en el triángulo lateral del cuello, suavemente junto al pulso carotídeo.
                     </p>
                   </div>
 
-                  <div className="p-3 bg-space-850 border border-space-800 rounded-lg">
-                    <span className="text-white font-bold block">Step 2: Transverse Compression</span>
-                    <p className="text-slate-400 text-[11px] mt-0.5">
-                      Apply gentle downward pressure. A normal vein collapses completely. Inability to compress indicates intraluminal thrombus.
+                  <div className="p-3.5 bg-venus-850 border border-venus-border rounded-xl">
+                    <span className="text-white font-semibold block">Paso 2: Compresión Suave</span>
+                    <p className="text-slate-300 text-[11px] mt-1">
+                      Una vena sana en el espacio se comprime con facilidad bajo la presión de la sonda.
                     </p>
                     <button
                       onClick={() => setCompressionTested(true)}
-                      className="mt-2 px-3 py-1 bg-cyan-900/60 hover:bg-cyan-800 text-cyan-300 border border-cyan-500 rounded text-xs transition-colors"
+                      className="mt-2 px-3.5 py-1.5 bg-venus-teal/20 hover:bg-venus-teal/30 text-emerald-200 border border-venus-teal/50 rounded-xl text-xs font-medium transition-colors"
                     >
-                      {compressionTested ? 'Compression Verified ✓' : 'TEST PROBE COMPRESSION'}
+                      {compressionTested ? 'Compresión Verificada ✓' : 'Probar Compresión con Sonda'}
                     </button>
                   </div>
 
-                  <div className="p-3 bg-space-850 border border-space-800 rounded-lg">
-                    <span className="text-white font-bold block">Step 3: Spectral Doppler Flow</span>
-                    <p className="text-slate-400 text-[11px] mt-0.5">
-                      Verify forward flow direction (&gt;15 cm/s). Retrograde flow indicates severe thoracic congestion.
+                  <div className="p-3.5 bg-venus-850 border border-venus-border rounded-xl">
+                    <span className="text-white font-semibold block">Paso 3: Flujo Positivo</span>
+                    <p className="text-slate-300 text-[11px] mt-1">
+                      V.E.N.U.S. analiza el espectro sonoro Doppler confirmando un flujo hacia el corazón superior a 15 cm/s.
                     </p>
                   </div>
                 </div>
@@ -164,89 +162,87 @@ export const CountermeasuresModal: React.FC<CountermeasuresModalProps> = ({
             </div>
           )}
 
-          {/* TAB 2: LBNP PROTOCOL */}
+          {/* TAB 2: LBNP */}
           {activeTab === 'LBNP' && (
             <div className="space-y-4">
-              <div className="p-3.5 bg-space-850 border border-amber-500/30 rounded-xl">
-                <span className="text-amber-300 font-bold block mb-1">
-                  OBJECTIVE: LOWER BODY NEGATIVE PRESSURE (LBNP) CEPHALIC DECONGESTION
+              <div className="p-4 bg-venus-850/70 border border-venus-amber/30 rounded-2xl">
+                <span className="text-amber-200 font-bold block mb-1">
+                  Propósito: Aliviar la congestión de la cabeza y los ojos (SANS)
                 </span>
-                <p className="text-slate-400 text-[11px]">
-                  Simulates terrestrial gravity by applying negative atmospheric pressure (-35 mmHg) to the lower limbs, pulling 800-1000 mL of fluid from head and eyes back to legs.
+                <p className="text-slate-300 text-[12px] leading-relaxed">
+                  El dispositivo de Presión Negativa de Cuerpo Inferior (LBNP) recrea la gravedad en tus piernas, atrayendo suavemente hasta 1 litro de fluidos retenidos en la cabeza hacia las extremidades inferiores.
                 </p>
               </div>
 
-              <div className="p-5 bg-space-950 border border-space-800 rounded-xl flex flex-col items-center justify-center space-y-3">
-                <div className="text-4xl font-mono font-black text-amber-300 tracking-wider">
+              <div className="p-6 bg-venus-950/80 border border-venus-border rounded-2xl flex flex-col items-center justify-center space-y-3">
+                <div className="text-4xl font-extrabold text-amber-200 tracking-tight">
                   -35.0 mmHg
                 </div>
-                <div className="text-xs text-slate-400 font-mono">
-                  TARGET VACUUM SETPOINT // 40 MINUTE CYCLE
+                <div className="text-xs text-slate-300">
+                  Presión suave de confort · Sesión de 40 minutos
                 </div>
 
-                <div className="flex items-center gap-3 pt-2">
-                  <button
-                    onClick={() => {
-                      setLbnpRunning(!lbnpRunning);
-                      if (!lbnpRunning) {
-                        onApplyTreatmentSuccess('LBNP Session started: Decompressing jugular venous bed.');
-                      }
-                    }}
-                    className={`px-5 py-2 rounded-lg font-bold transition-all border ${
-                      lbnpRunning
-                        ? 'bg-red-950 text-red-300 border-red-500'
-                        : 'bg-amber-900/60 hover:bg-amber-800 text-amber-200 border-amber-500 shadow-[0_0_15px_rgba(251,191,36,0.3)]'
-                    }`}
-                  >
-                    {lbnpRunning ? 'PAUSE SESSION' : 'ENGAGE LBNP VACUUM CHAMBER'}
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    setLbnpRunning(!lbnpRunning);
+                    if (!lbnpRunning) {
+                      onApplyTreatmentSuccess('Sesión LBNP iniciada con serenidad. Aliviando presión ocular.');
+                    }
+                  }}
+                  className={`px-6 py-2.5 rounded-2xl font-bold text-xs transition-all duration-300 border ${
+                    lbnpRunning
+                      ? 'bg-venus-coral/20 text-venus-coral border-venus-coral'
+                      : 'bg-gradient-to-r from-venus-amber to-amber-500 text-venus-950 shadow-glow-coral'
+                  }`}
+                >
+                  {lbnpRunning ? 'Pausar Sesión LBNP' : 'Iniciar Sesión Relajante LBNP'}
+                </button>
 
                 {lbnpRunning && (
-                  <div className="text-[11px] text-emerald-400 animate-pulse font-semibold">
-                    Vacuum active: Fluid translocation in progress. Optic nerve sheath pressure decreasing.
+                  <div className="text-xs text-emerald-300 font-medium animate-pulse">
+                    Sesión activa: Respira con calma. La presión intracraneal y ocular está descendiendo a niveles de reposo.
                   </div>
                 )}
               </div>
             </div>
           )}
 
-          {/* TAB 3: PHARMA PROTOCOL */}
+          {/* TAB 3: PHARMA */}
           {activeTab === 'PHARMA' && (
             <div className="space-y-3">
-              <div className="p-3.5 bg-space-850 border border-purple-500/30 rounded-xl">
-                <span className="text-purple-300 font-bold block mb-1">
-                  PHARMACOKINETIC PROTOCOL: ANTICOAGULATION & SUPPRESSION ADHERENCE
+              <div className="p-4 bg-venus-850/70 border border-venus-rose/30 rounded-2xl">
+                <span className="text-venus-blush font-bold block mb-1">
+                  Cuidado Farmacocinético y Supresión Menstrual
                 </span>
-                <p className="text-slate-400 text-[11px]">
-                  If ultrasound confirms stagnant flow or thrombus formation, administer medical kit countermeasures immediately.
+                <p className="text-slate-300 text-[12px]">
+                  En caso de detectar estasis severa o sospecha de coágulo, el botiquín de abordo cuenta con anticoagulantes protectores y alternativas hormonales.
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <div className="p-3 bg-space-950 border border-space-800 rounded-lg flex items-center justify-between">
+              <div className="space-y-2.5">
+                <div className="p-4 bg-venus-950/80 border border-venus-border rounded-2xl flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-slate-100">Enoxaparin (Low Molecular Weight Heparin)</span>
-                    <p className="text-[11px] text-slate-400">Dose: 1.5 mg/kg SubQ once daily. For acute IJV thrombosis.</p>
+                    <span className="font-bold text-white text-sm">Enoxaparina Subcutánea (Botiquín de Emergencia)</span>
+                    <p className="text-[11px] text-slate-300 mt-0.5">Dosis: 1.5 mg/kg. Aplicar con tranquilidad en el tejido subcutáneo abdominal si se confirma estasis crítica.</p>
                   </div>
                   <button
-                    onClick={() => onApplyTreatmentSuccess('Enoxaparin injection verified in flight medical log.')}
-                    className="px-3 py-1.5 bg-purple-900/60 hover:bg-purple-800 border border-purple-500 text-purple-200 rounded text-xs transition-colors"
+                    onClick={() => onApplyTreatmentSuccess('Dosis de Enoxaparina anotada en el diario médico.')}
+                    className="px-3.5 py-2 bg-venus-rose/20 hover:bg-venus-rose/30 border border-venus-rose/50 text-venus-blush rounded-xl text-xs font-medium transition-colors"
                   >
-                    LOG INJECTION
+                    Registrar
                   </button>
                 </div>
 
-                <div className="p-3 bg-space-950 border border-space-800 rounded-lg flex items-center justify-between">
+                <div className="p-4 bg-venus-950/80 border border-venus-border rounded-2xl flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-slate-100">Oral Progestin Cycle Suppression</span>
-                    <p className="text-[11px] text-slate-400">Regular oral administration. If thrombosis is diagnosed, switch to progestin-only IUD or transdermal alternative.</p>
+                    <span className="font-bold text-white text-sm">Progestágeno Oral Continuo</span>
+                    <p className="text-[11px] text-slate-300 mt-0.5">Mantener horario fijo para evitar fluctuaciones hormonales en el tejido vascular.</p>
                   </div>
                   <button
-                    onClick={() => onApplyTreatmentSuccess('Hormonal dose verified.')}
-                    className="px-3 py-1.5 bg-space-800 hover:bg-space-700 border border-space-600 text-slate-200 rounded text-xs transition-colors"
+                    onClick={() => onApplyTreatmentSuccess('Pauta de progestágeno confirmada.')}
+                    className="px-3.5 py-2 bg-venus-850 hover:bg-venus-800 border border-venus-border text-slate-200 rounded-xl text-xs font-medium transition-colors"
                   >
-                    CONFIRM DOSE
+                    Confirmar
                   </button>
                 </div>
               </div>
@@ -256,30 +252,30 @@ export const CountermeasuresModal: React.FC<CountermeasuresModalProps> = ({
           {/* TAB 4: HYDRATION */}
           {activeTab === 'HYDRATION' && (
             <div className="space-y-3">
-              <div className="p-3.5 bg-space-850 border border-emerald-500/30 rounded-xl">
-                <span className="text-emerald-300 font-bold block mb-1">
-                  HYPOVOLEMIA & PLASMA VOLUME RECONSTITUTION
+              <div className="p-4 bg-venus-850/70 border border-venus-teal/30 rounded-2xl">
+                <span className="text-teal-200 font-bold block mb-1">
+                  Reconstitución de Volumen Plasmático con Sales
                 </span>
-                <p className="text-slate-400 text-[11px]">
-                  Astronauts lose ~15-20% plasma volume in the first days of microgravity. Reconstitution prevents hemoconcentration and reduced venous shear rate.
+                <p className="text-slate-300 text-[12px]">
+                  En microgravedad el cuerpo excreta agua rápidamente. Reponer sales mantiene la sangre fluida y evita que los estrógenos espesen el torrente venoso.
                 </p>
               </div>
 
-              <div className="p-4 bg-space-950 border border-space-800 rounded-xl space-y-3">
+              <div className="p-5 bg-venus-950/80 border border-venus-border rounded-2xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300 font-bold">Recommended Fluid Bolus:</span>
-                  <span className="text-emerald-400 font-mono text-sm font-bold">600 mL Saline Solution</span>
+                  <span className="text-white font-medium">Bolo Salino Recomendado:</span>
+                  <span className="text-emerald-300 font-bold text-sm">600 mL Agua con Electrolitos</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300 font-bold">Electrolyte Sachet:</span>
-                  <span className="text-slate-400">1x NASA Standard Mineral Electrolyte Blend (Na+ 1.2g, K+ 350mg)</span>
+                  <span className="text-slate-300">Sobres minerales:</span>
+                  <span className="text-slate-400">1 sobre estándar NASA (Sodio 1.2g + Potasio 350mg)</span>
                 </div>
 
                 <button
-                  onClick={() => onApplyTreatmentSuccess('Hydration bolus logged. Plasma viscosity normalizing.')}
-                  className="w-full mt-2 py-2 bg-emerald-900/60 hover:bg-emerald-800 border border-emerald-500 text-emerald-200 rounded-lg text-xs font-bold transition-all shadow-[0_0_12px_rgba(0,245,160,0.2)]"
+                  onClick={() => onApplyTreatmentSuccess('Bolo de hidratación completado. Tu sangre recupera fluidez óptima.')}
+                  className="w-full mt-3 py-2.5 bg-gradient-to-r from-venus-teal to-emerald-500 text-venus-950 font-bold text-xs rounded-2xl shadow-glow-mint transition-all hover:opacity-95"
                 >
-                  LOG 600 mL ELECTROLYTE INTAKE
+                  Confirmar Ingesta de 600 mL de Solución Hidratante
                 </button>
               </div>
             </div>
@@ -287,13 +283,15 @@ export const CountermeasuresModal: React.FC<CountermeasuresModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-3 border-t border-space-800 bg-space-850 flex items-center justify-between text-xs font-mono text-slate-400">
-          <span>Guideline: NASA Human Research Program (HRP-47053)</span>
+        <div className="px-6 py-4 border-t border-venus-border bg-venus-850/80 flex items-center justify-between text-xs text-slate-400">
+          <span className="flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5 text-venus-rose" /> Protocolos Clínicos NASA Human Research Program
+          </span>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-space-800 hover:bg-space-700 text-slate-200 rounded border border-space-700 transition-colors"
+            className="px-4 py-2 bg-venus-800 hover:bg-venus-700 text-white rounded-xl border border-venus-border transition-colors font-medium"
           >
-            CLOSE
+            Cerrar Guía
           </button>
         </div>
       </div>

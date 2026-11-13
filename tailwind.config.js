@@ -7,35 +7,46 @@ export default {
   theme: {
     extend: {
       colors: {
-        space: {
-          950: '#05070e',
-          900: '#0a0e1a',
-          850: '#0f172a',
-          800: '#15203b',
-          700: '#1e2e54',
-          border: 'rgba(56, 189, 248, 0.2)',
-        },
-        hud: {
-          cyan: '#00f2fe',
-          teal: '#4facfe',
-          green: '#00f5a0',
+        venus: {
+          950: '#0a0815',
+          900: '#120e24',
+          850: '#1a1433',
+          800: '#251c47',
+          700: '#342761',
+          rose: '#f472b6',
+          blush: '#fbcfe8',
+          orchid: '#e879f9',
+          purple: '#c084fc',
+          mint: '#34d399',
+          teal: '#2dd4bf',
+          coral: '#fb7185',
           amber: '#fbbf24',
-          red: '#ff3366',
-          purple: '#a855f7',
-        }
+          pearl: '#f8fafc',
+          border: 'rgba(244, 114, 182, 0.18)',
+        },
       },
       fontFamily: {
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'monospace'],
+        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
+      },
+      boxShadow: {
+        'glow-rose': '0 0 25px -5px rgba(244, 114, 182, 0.3)',
+        'glow-mint': '0 0 25px -5px rgba(52, 211, 153, 0.3)',
+        'glow-coral': '0 0 25px -5px rgba(251, 113, 133, 0.3)',
+        'soft-glass': '0 8px 32px 0 rgba(10, 8, 21, 0.37)',
       },
       animation: {
-        'pulse-fast': 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
-        'scan': 'scanline 6s linear infinite',
+        'breathe': 'breathe 4s ease-in-out infinite',
+        'pulse-gentle': 'pulseGentle 2.5s ease-in-out infinite',
       },
       keyframes: {
-        scanline: {
-          '0%': { transform: 'translateY(-100%)' },
-          '100%': { transform: 'translateY(1000%)' },
+        breathe: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.85' },
+          '50%': { transform: 'scale(1.03)', opacity: '1' },
+        },
+        pulseGentle: {
+          '0%, 100%': { opacity: '0.9' },
+          '50%': { opacity: '0.5' },
         }
       }
     },

@@ -1,10 +1,9 @@
 // ==============================================================================
-// V.E.N.U.S. Voice Control & Dual Tactical Hotkeys Interface
-// Hands-free microgravity voice recognition + bulletproof live demo fallbacks
+// V.E.N.U.S. Voice Control & Dual Tactical Hotkeys Interface (Warm & Friendly)
 // ==============================================================================
 
 import React, { useState, useEffect } from 'react';
-import { Mic, MicOff, AlertOctagon, RefreshCw } from 'lucide-react';
+import { Mic, MicOff, Sparkles, RefreshCw, AlertCircle, Flower2, Layers } from 'lucide-react';
 import { parseSpokenIntent, speakTacticalMessage, SpeechCommandIntent } from '../../engine/speechEngine';
 
 interface VoiceControlBarProps {
@@ -29,7 +28,7 @@ export const VoiceControlBar: React.FC<VoiceControlBarProps> = ({
 
   const toggleListening = () => {
     if (!speechSupported) {
-      speakTacticalMessage('Control por voz no soportado en este navegador. Usando teclado táctico.');
+      speakTacticalMessage('Control por voz no soportado en este navegador. Puedes usar los botones táctiles o el teclado.');
       return;
     }
 
@@ -71,92 +70,90 @@ export const VoiceControlBar: React.FC<VoiceControlBarProps> = ({
   };
 
   return (
-    <div className="w-full bg-space-900/90 border border-space-800 rounded-xl p-3 backdrop-blur shadow-lg">
+    <div className="w-full bg-venus-900/80 border border-venus-border rounded-3xl p-3.5 backdrop-blur-xl shadow-soft-glass">
       <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-        {/* Voice Engine Status & Waveform */}
+        {/* Voice Microphone & Feedback */}
         <div className="flex items-center gap-3 w-full md:w-auto">
           <button
             onClick={toggleListening}
-            className={`p-2.5 rounded-lg border transition-all flex items-center gap-2 ${
+            className={`px-3.5 py-2.5 rounded-2xl border transition-all duration-300 flex items-center gap-2 ${
               isListening
-                ? 'bg-red-950/80 border-hud-red text-hud-red shadow-[0_0_15px_rgba(255,51,102,0.4)] animate-pulse'
-                : 'bg-space-850 hover:bg-space-800 border-space-700 text-slate-300'
+                ? 'bg-venus-coral text-white border-white shadow-glow-coral animate-pulse'
+                : 'bg-venus-850 hover:bg-venus-800 border-venus-border text-venus-blush hover:shadow-glow-rose'
             }`}
-            title="Activar reconocimiento por voz"
+            title="Activar asistente de voz para manos libres"
           >
             {isListening ? <Mic className="w-4 h-4 animate-bounce" /> : <MicOff className="w-4 h-4" />}
-            <span className="font-mono text-xs font-bold">
-              {isListening ? 'ESCUCHANDO...' : 'VOZ: ACTIVAR'}
+            <span className="text-xs font-semibold">
+              {isListening ? 'Escuchándote...' : 'Hablar con V.E.N.U.S.'}
             </span>
           </button>
 
-          {/* Audio Visualizer Wave Effect */}
-          <div className="flex items-center gap-1 h-5 px-2 bg-space-950 rounded border border-space-800">
+          {/* Gentle Sound Wave Visualizer */}
+          <div className="flex items-center gap-1 h-6 px-2.5 bg-venus-950/80 rounded-xl border border-venus-border/40">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <span
                 key={i}
                 className={`w-1 rounded-full transition-all duration-300 ${
-                  isListening ? 'bg-cyan-400 animate-pulse' : 'bg-slate-700 h-2'
+                  isListening ? 'bg-venus-rose animate-pulse' : 'bg-venus-700 h-2'
                 }`}
                 style={{
-                  height: isListening ? `${Math.floor(Math.random() * 16 + 4)}px` : '4px',
+                  height: isListening ? `${Math.floor(Math.random() * 16 + 6)}px` : '4px',
                 }}
               />
             ))}
           </div>
 
-          {/* Transcript / Spoken Feedback */}
-          <div className="text-xs font-mono text-slate-300 truncate max-w-xs">
+          {/* Transcript / Spoken Output */}
+          <div className="text-xs text-slate-300 truncate max-w-sm">
             {transcript ? (
-              <span className="text-cyan-300">"{transcript}"</span>
+              <span className="text-venus-blush font-medium">"{transcript}"</span>
             ) : lastSpokenText ? (
-              <span className="text-slate-400 italic">V.E.N.U.S: {lastSpokenText}</span>
+              <span className="text-slate-300 italic">V.E.N.U.S: {lastSpokenText}</span>
             ) : (
-              <span className="text-slate-500">"VENUS, registrar pastilla" o "reporte"</span>
+              <span className="text-slate-400">Prueba: "VENUS, registrar pastilla" o "reporte"</span>
             )}
           </div>
         </div>
 
-        {/* Tactical Hotkeys / Pitch Buttons */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
-          <span className="text-[10px] text-slate-500 mr-1 hidden sm:inline">DEMO HOTKEYS:</span>
+        {/* Demo Fast Action Pills (Pitch Friendly) */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-[11px] text-slate-400 mr-1 hidden sm:inline">Atajos Rápidos:</span>
 
           <button
             onClick={() => onCommandReceived('LOG_PILL')}
-            className="px-2 py-1 bg-space-850 hover:bg-space-800 text-purple-300 border border-purple-500/40 rounded transition-all flex items-center gap-1"
-            title="Hotkey: P or Space"
+            className="px-3 py-1.5 bg-venus-rose/15 hover:bg-venus-rose/25 text-venus-blush border border-venus-rose/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
+            title="Tecla rápida: P o Espacio"
           >
-            <span className="bg-space-800 px-1 py-0.2 rounded text-[10px] text-white font-bold border border-space-700">P</span>
-            <span>PASTILLA</span>
+            <Flower2 className="w-3.5 h-3.5 text-venus-rose" />
+            <span className="font-medium">Tomar Dosis [P]</span>
           </button>
 
           <button
             onClick={() => onCommandReceived('LAYER_VASCULAR')}
-            className="px-2 py-1 bg-space-850 hover:bg-space-800 text-cyan-300 border border-cyan-500/40 rounded transition-all flex items-center gap-1"
-            title="Hotkey: V"
+            className="px-3 py-1.5 bg-venus-teal/15 hover:bg-venus-teal/25 text-emerald-200 border border-venus-teal/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
+            title="Tecla rápida: V"
           >
-            <span className="bg-space-800 px-1 py-0.2 rounded text-[10px] text-white font-bold border border-space-700">V</span>
-            <span>CAPA</span>
+            <Layers className="w-3.5 h-3.5 text-venus-teal" />
+            <span className="font-medium">Cambiar Capa [V]</span>
           </button>
 
           <button
             onClick={() => onCommandReceived('SIMULATE_EMERGENCY')}
-            className="px-2.5 py-1 bg-red-950/60 hover:bg-red-900 text-hud-red border border-hud-red/60 rounded transition-all flex items-center gap-1 shadow-[0_0_10px_rgba(255,51,102,0.2)] font-bold"
-            title="Hotkey: Shift + D"
+            className="px-3 py-1.5 bg-venus-coral/20 hover:bg-venus-coral/30 text-white border border-venus-coral/60 rounded-xl transition-all flex items-center gap-1.5 shadow-glow-coral font-medium"
+            title="Tecla rápida: Shift + D"
           >
-            <span className="bg-red-900/80 px-1 py-0.2 rounded text-[10px] text-white font-bold border border-red-500">⇧D</span>
-            <AlertOctagon className="w-3.5 h-3.5" />
-            <span>INCIDENTE</span>
+            <AlertCircle className="w-3.5 h-3.5 text-venus-coral" />
+            <span>Simular Incidente [⇧D]</span>
           </button>
 
           <button
             onClick={() => onCommandReceived('RESET_NOMINAL')}
-            className="px-2 py-1 bg-space-850 hover:bg-space-800 text-slate-300 border border-space-700 rounded transition-all flex items-center gap-1"
-            title="Hotkey: R"
+            className="px-2.5 py-1.5 bg-venus-850 hover:bg-venus-800 text-slate-300 border border-venus-border rounded-xl transition-all flex items-center gap-1"
+            title="Tecla rápida: R"
           >
-            <span className="bg-space-800 px-1 py-0.2 rounded text-[10px] text-white font-bold border border-space-700">R</span>
-            <RefreshCw className="w-3 h-3 text-emerald-400" />
-            <span>RESET</span>
+            <RefreshCw className="w-3.5 h-3.5 text-venus-teal" />
+            <span>Reset [R]</span>
           </button>
         </div>
       </div>

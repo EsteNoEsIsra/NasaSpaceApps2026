@@ -1,10 +1,11 @@
 // ==============================================================================
-// V.E.N.U.S. Vitals & Neuro-Endocrine Telemetry Monitor
+// V.E.N.U.S. Empathetic Health Cards (Female-Friendly Healthcare)
+// Clear, natural language, reassuring micro-interactions
 // ==============================================================================
 
 import React from 'react';
 import { VitalMetrics, TriageLevel } from '../../types';
-import { Activity, Eye, Droplet, Pill, Heart, Zap, ArrowUpRight } from 'lucide-react';
+import { Heart, Sparkles, Droplets, Flower2, Eye, Activity, CheckCircle2, ArrowRight } from 'lucide-react';
 
 interface VitalsMonitorProps {
   metrics: VitalMetrics;
@@ -15,226 +16,264 @@ interface VitalsMonitorProps {
 
 export const VitalsMonitor: React.FC<VitalsMonitorProps> = ({
   metrics,
-  triage,
   onLogPill,
   onOpenCountermeasure,
 }) => {
   const vsi = metrics.vascularStasisIndex;
   const isVsiHigh = vsi >= 70;
   const isVsiMedium = vsi >= 40 && vsi < 70;
-
-  const isJugularSlow = metrics.jugularVeinVelocity < 8.0;
-  const isIopHigh = Math.max(metrics.iopLeftEye, metrics.iopRightEye) >= 21.0;
+  const isIopHigh = Math.max(metrics.iopLeftEye, metrics.iopRightEye) >= 21;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {/* 1. VASCULAR STASIS INDEX (PRIMARY HERO CARD) */}
-      <div className={`p-4 rounded-xl border transition-all ${
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+      {/* 1. HERO CARD: EQUILIBRIO VASCULAR (VSI) */}
+      <div className={`p-5 rounded-3xl border transition-all duration-300 relative overflow-hidden backdrop-blur-xl ${
         isVsiHigh
-          ? 'bg-red-950/40 border-hud-red shadow-[0_0_20px_rgba(255,51,102,0.25)]'
+          ? 'bg-venus-coral/15 border-venus-coral/60 shadow-glow-coral'
           : isVsiMedium
-          ? 'bg-amber-950/30 border-hud-amber'
-          : 'bg-space-900/80 border-space-800'
+          ? 'bg-venus-amber/10 border-venus-amber/40'
+          : 'bg-venus-900/60 border-venus-border shadow-soft-glass'
       }`}>
-        <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-1">
-          <div className="flex items-center gap-1.5">
-            <Zap className={`w-4 h-4 ${isVsiHigh ? 'text-hud-red animate-pulse' : 'text-hud-cyan'}`} />
-            <span className="font-semibold tracking-wider">VASCULAR STASIS INDEX</span>
+        <div className="flex items-center justify-between text-xs text-slate-300 mb-2">
+          <div className="flex items-center gap-2">
+            <div className={`p-1.5 rounded-xl ${isVsiHigh ? 'bg-venus-coral/20 text-venus-coral' : 'bg-venus-rose/15 text-venus-rose'}`}>
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <span className="font-semibold text-white">Fluidez Vascular (VSI)</span>
           </div>
-          <span className="text-[10px] bg-space-800 px-1.5 py-0.5 rounded text-cyan-300">VSI</span>
+          <span className="text-[11px] text-slate-400 bg-venus-850 px-2 py-0.5 rounded-full">
+            Índice NASA
+          </span>
         </div>
 
-        <div className="flex items-baseline gap-2 mt-2">
-          <span className={`text-3xl font-mono font-black ${
-            isVsiHigh ? 'text-hud-red' : isVsiMedium ? 'text-hud-amber' : 'text-hud-cyan'
+        <div className="flex items-baseline gap-2 mt-3">
+          <span className={`text-3xl font-extrabold tracking-tight ${
+            isVsiHigh ? 'text-venus-coral' : isVsiMedium ? 'text-venus-amber' : 'text-venus-blush'
           }`}>
             {vsi}%
           </span>
-          <span className="text-xs font-mono text-slate-400">
-            {isVsiHigh ? 'CRITICAL RISK' : isVsiMedium ? 'ELEVATED' : 'NOMINAL'}
+          <span className="text-xs text-slate-300 font-medium">
+            {isVsiHigh ? 'Cuidado requerido' : isVsiMedium ? 'Estasis leve' : 'Flujo sereno y armónico'}
           </span>
         </div>
 
-        {/* Progress meter */}
-        <div className="w-full bg-space-950 h-2 rounded-full mt-3 overflow-hidden border border-space-800">
+        {/* Soft rounded bar */}
+        <div className="w-full bg-venus-950/80 h-2.5 rounded-full mt-3.5 overflow-hidden p-0.5 border border-venus-border/40">
           <div
-            className={`h-full transition-all duration-700 rounded-full ${
-              isVsiHigh ? 'bg-hud-red shadow-[0_0_10px_#ff3366]' : isVsiMedium ? 'bg-hud-amber' : 'bg-hud-cyan'
+            className={`h-full rounded-full transition-all duration-700 ${
+              isVsiHigh
+                ? 'bg-gradient-to-r from-venus-amber to-venus-coral'
+                : isVsiMedium
+                ? 'bg-venus-amber'
+                : 'bg-gradient-to-r from-venus-rose via-venus-orchid to-venus-teal'
             }`}
-            style={{ width: `${Math.min(100, Math.max(5, vsi))}%` }}
+            style={{ width: `${Math.min(100, Math.max(8, vsi))}%` }}
           />
         </div>
 
-        <p className="text-[11px] font-mono text-slate-400 mt-2.5">
-          Cross-indexed: Estrogen Load ({metrics.estrogenLoadIndex}%) + Jugular Flow ({metrics.jugularVeinVelocity} cm/s) + Hydration.
+        <p className="text-[11px] text-slate-300 mt-3 leading-relaxed">
+          {isVsiHigh
+            ? 'La microgravedad está reteniendo fluidos en el cuello. Cuidemos tu circulación con un escaneo guiado.'
+            : 'Tu combinación de supresión hormonal y retorno venoso se encuentra en equilibrio.'}
         </p>
       </div>
 
-      {/* 2. JUGULAR VEIN VELOCITY (DOPPLER) */}
-      <div className={`p-4 rounded-xl border transition-all ${
-        isJugularSlow ? 'bg-amber-950/30 border-hud-amber' : 'bg-space-900/80 border-space-800'
-      }`}>
-        <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-1">
-          <div className="flex items-center gap-1.5">
-            <Activity className="w-4 h-4 text-cyan-400" />
-            <span className="font-semibold tracking-wider">IJV DOPPLER VELOCITY</span>
+      {/* 2. RITUAL DE SUPRESIÓN HORMONAL (DAILY PILL) */}
+      <div className="p-5 rounded-3xl border bg-venus-900/60 border-venus-border shadow-soft-glass flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between text-xs text-slate-300 mb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-xl bg-venus-rose/15 text-venus-rose">
+                <Flower2 className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-white">Ritual Hormonal</span>
+            </div>
+            <span className="text-[10px] text-venus-blush bg-venus-rose/10 px-2 py-0.5 rounded-full">
+              Diario
+            </span>
           </div>
-          <button
-            onClick={() => onOpenCountermeasure('ULTRASOUND')}
-            className="text-[10px] text-cyan-400 hover:text-cyan-300 flex items-center gap-0.5"
-          >
-            SCAN <ArrowUpRight className="w-3 h-3" />
-          </button>
+
+          <div className="mt-3">
+            <div className="text-sm font-medium text-slate-200">
+              {metrics.dailyPillTaken ? (
+                <div className="flex items-center gap-1.5 text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Dosis de hoy completada 🌸</span>
+                </div>
+              ) : (
+                <span className="text-venus-coral font-medium">Recordatorio: Toma tu dosis programada</span>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-400 mt-1">
+              Carga de supresión: <strong className="text-venus-blush">{metrics.estrogenLoadIndex}%</strong> (protege tu bienestar y evita ciclos en ingravidez).
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-baseline gap-2 mt-2">
-          <span className={`text-3xl font-mono font-black ${
-            metrics.jugularVeinVelocity <= 2.0 ? 'text-hud-red' : isJugularSlow ? 'text-hud-amber' : 'text-slate-100'
-          }`}>
-            {metrics.jugularVeinVelocity}
-          </span>
-          <span className="text-xs font-mono text-slate-400">cm/s</span>
-          <span className="text-[11px] font-mono ml-auto text-slate-400">
-            {metrics.jugularVeinVelocity <= 2.0 ? 'RETROGRADE/STASIS' : isJugularSlow ? 'SLUGGISH' : 'LAMINAR'}
-          </span>
+        <button
+          onClick={onLogPill}
+          disabled={metrics.dailyPillTaken}
+          className={`mt-4 w-full py-2.5 px-4 text-xs font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 ${
+            metrics.dailyPillTaken
+              ? 'bg-venus-850 text-slate-500 border border-venus-border/40 cursor-default'
+              : 'bg-gradient-to-r from-venus-rose to-venus-orchid text-white hover:opacity-95 shadow-glow-rose'
+          }`}
+        >
+          <span>{metrics.dailyPillTaken ? 'Dosis Registrada ✓' : 'Completar Ritual Diario (Tecla P)'}</span>
+        </button>
+      </div>
+
+      {/* 3. CIRCULACIÓN YUGULAR (DOPPLER) */}
+      <div className="p-5 rounded-3xl border bg-venus-900/60 border-venus-border shadow-soft-glass flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between text-xs text-slate-300 mb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-xl bg-venus-teal/15 text-venus-teal">
+                <Activity className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-white">Flujo Yugular (Cuello)</span>
+            </div>
+            <button
+              onClick={() => onOpenCountermeasure('ULTRASOUND')}
+              className="text-[11px] text-venus-teal hover:underline flex items-center gap-0.5"
+            >
+              Ecografía <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+
+          <div className="flex items-baseline gap-2 mt-3">
+            <span className={`text-3xl font-extrabold ${
+              metrics.jugularVeinVelocity <= 2.0 ? 'text-venus-coral' : metrics.jugularVeinVelocity < 8.0 ? 'text-venus-amber' : 'text-white'
+            }`}>
+              {metrics.jugularVeinVelocity}
+            </span>
+            <span className="text-xs text-slate-400">cm/s</span>
+            <span className="text-xs text-slate-300 ml-auto font-medium">
+              {metrics.jugularVeinVelocity <= 2.0 ? 'Retención severa' : metrics.jugularVeinVelocity < 8.0 ? 'Lenta' : 'Laminar'}
+            </span>
+          </div>
+
+          <p className="text-[11px] text-slate-400 mt-2">
+            Velocidad con la que la sangre desciende de la cabeza hacia el corazón.
+          </p>
         </div>
 
-        <div className="mt-4 flex items-center justify-between text-[11px] font-mono text-slate-400 border-t border-space-800 pt-2">
-          <span>Target: &gt;15 cm/s</span>
-          <span className="text-cyan-400 font-semibold">B-Mode + Spectral</span>
+        <div className="mt-3 pt-2.5 border-t border-venus-border/60 flex items-center justify-between text-[11px] text-slate-400">
+          <span>Meta: &gt;15 cm/s</span>
+          <span className="text-venus-teal font-medium">Sonda de Bolsillo Lista</span>
         </div>
       </div>
 
-      {/* 3. INTRAOCULAR PRESSURE (SANS) */}
-      <div className={`p-4 rounded-xl border transition-all ${
-        isIopHigh ? 'bg-red-950/30 border-hud-red' : 'bg-space-900/80 border-space-800'
-      }`}>
-        <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-1">
-          <div className="flex items-center gap-1.5">
-            <Eye className="w-4 h-4 text-amber-400" />
-            <span className="font-semibold tracking-wider">INTRAOCULAR PRESSURE (SANS)</span>
+      {/* 4. SALUD OCULAR & VISIÓN (SANS) */}
+      <div className="p-5 rounded-3xl border bg-venus-900/60 border-venus-border shadow-soft-glass flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between text-xs text-slate-300 mb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-xl bg-venus-amber/15 text-venus-amber">
+                <Eye className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-white">Salud Ocular (SANS)</span>
+            </div>
+            <button
+              onClick={() => onOpenCountermeasure('LBNP')}
+              className="text-[11px] text-venus-amber hover:underline flex items-center gap-0.5"
+            >
+              Alivio <ArrowRight className="w-3 h-3" />
+            </button>
           </div>
-          <button
-            onClick={() => onOpenCountermeasure('LBNP')}
-            className="text-[10px] text-amber-400 hover:text-amber-300 flex items-center gap-0.5"
-          >
-            LBNP <ArrowUpRight className="w-3 h-3" />
-          </button>
+
+          <div className="flex items-baseline gap-2 mt-3">
+            <span className={`text-3xl font-extrabold ${isIopHigh ? 'text-venus-coral' : 'text-white'}`}>
+              {Math.max(metrics.iopLeftEye, metrics.iopRightEye).toFixed(1)}
+            </span>
+            <span className="text-xs text-slate-400">mmHg</span>
+            <span className="text-xs text-slate-300 ml-auto font-medium">
+              Ojo Izq: {metrics.iopLeftEye} · Der: {metrics.iopRightEye}
+            </span>
+          </div>
+
+          <p className="text-[11px] text-slate-400 mt-2">
+            Monitoreo preventivo del nervio óptico ante la presión intracraneal en ingravidez.
+          </p>
         </div>
 
-        <div className="flex items-baseline gap-2 mt-2">
-          <span className={`text-3xl font-mono font-black ${isIopHigh ? 'text-hud-red' : 'text-slate-100'}`}>
-            {Math.max(metrics.iopLeftEye, metrics.iopRightEye).toFixed(1)}
-          </span>
-          <span className="text-xs font-mono text-slate-400">mmHg</span>
-          <span className="text-[11px] font-mono ml-auto text-slate-400">
-            L: {metrics.iopLeftEye} | R: {metrics.iopRightEye}
-          </span>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between text-[11px] font-mono text-slate-400 border-t border-space-800 pt-2">
-          <span>Nominal threshold: &lt; 20 mmHg</span>
-          <span className={isIopHigh ? 'text-hud-red font-bold' : 'text-hud-green'}>
-            {isIopHigh ? 'PAPILLEDEMA RISK' : 'NORMAL'}
+        <div className="mt-3 pt-2.5 border-t border-venus-border/60 flex items-center justify-between text-[11px]">
+          <span className="text-slate-400">Umbral seguro: &lt; 20 mmHg</span>
+          <span className={isIopHigh ? 'text-venus-coral font-medium' : 'text-emerald-300 font-medium'}>
+            {isIopHigh ? 'Alivio sugerido' : 'Visión protegida'}
           </span>
         </div>
       </div>
 
-      {/* 4. ENDOCRINE CYCLE & ORAL SUPPRESSION */}
-      <div className="p-4 rounded-xl border bg-space-900/80 border-space-800">
-        <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-1">
-          <div className="flex items-center gap-1.5">
-            <Pill className="w-4 h-4 text-purple-400" />
-            <span className="font-semibold tracking-wider">ORAL CYCLE SUPPRESSION</span>
+      {/* 5. HIDRATACIÓN & AGUA CELULAR */}
+      <div className="p-5 rounded-3xl border bg-venus-900/60 border-venus-border shadow-soft-glass flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between text-xs text-slate-300 mb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-xl bg-venus-teal/15 text-venus-teal">
+                <Droplets className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-white">Hidratación & Plasma</span>
+            </div>
+            <button
+              onClick={() => onOpenCountermeasure('HYDRATION')}
+              className="text-[11px] text-venus-teal hover:underline flex items-center gap-0.5"
+            >
+              Electrolitos <ArrowRight className="w-3 h-3" />
+            </button>
           </div>
-          <span className="text-[10px] text-purple-300 bg-space-800 px-1.5 py-0.5 rounded">REGIMEN</span>
+
+          <div className="flex items-baseline gap-2 mt-3">
+            <span className={`text-3xl font-extrabold ${metrics.hydrationDeficitPct > 15 ? 'text-venus-amber' : 'text-white'}`}>
+              -{metrics.hydrationDeficitPct}%
+            </span>
+            <span className="text-xs text-slate-400">Déficit</span>
+            <span className="text-xs text-slate-300 ml-auto font-medium">
+              {metrics.hydrationDeficitPct > 15 ? 'Bolo sugerido' : 'Hidratada'}
+            </span>
+          </div>
+
+          <p className="text-[11px] text-slate-400 mt-2">
+            El agua con sales evita que la sangre se espese y previene trombos en el espacio.
+          </p>
         </div>
 
-        <div className="flex items-center justify-between mt-3">
-          <div>
-            <span className="text-xs font-mono text-slate-400">Daily Pill Status:</span>
-            <div className="flex items-center gap-2 mt-1">
-              <span className={`text-base font-mono font-bold ${metrics.dailyPillTaken ? 'text-hud-green' : 'text-hud-amber'}`}>
-                {metrics.dailyPillTaken ? 'LOGGED (NOMINAL)' : 'PENDING DOSE'}
-              </span>
+        <div className="mt-3 pt-2.5 border-t border-venus-border/60 flex items-center justify-between text-[11px] text-slate-400">
+          <span>Meta: &lt; 8% déficit</span>
+          <span className="text-emerald-300 font-medium">Sales activas</span>
+        </div>
+      </div>
+
+      {/* 6. CORAZÓN & VITALIDAD */}
+      <div className="p-5 rounded-3xl border bg-venus-900/60 border-venus-border shadow-soft-glass flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between text-xs text-slate-300 mb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-xl bg-venus-coral/15 text-venus-coral">
+                <Heart className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-white">Pulso & Serenidad</span>
+            </div>
+            <span className="text-[10px] text-slate-400 bg-venus-850 px-2 py-0.5 rounded-full">
+              Continuo
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            <div>
+              <span className="text-[11px] text-slate-400">PULSO</span>
+              <div className="text-2xl font-extrabold text-white">{metrics.heartRate} <span className="text-xs font-normal text-slate-400">lpm</span></div>
+            </div>
+            <div>
+              <span className="text-[11px] text-slate-400">PRESIÓN</span>
+              <div className="text-2xl font-extrabold text-white">{metrics.bloodPressureSys}/{metrics.bloodPressureDia}</div>
             </div>
           </div>
-          <button
-            onClick={onLogPill}
-            disabled={metrics.dailyPillTaken}
-            className={`px-3 py-1.5 text-xs font-mono rounded-lg transition-all border ${
-              metrics.dailyPillTaken
-                ? 'bg-space-800 text-slate-500 border-space-700 cursor-not-allowed'
-                : 'bg-purple-900/70 hover:bg-purple-800 border-purple-500 text-purple-200 shadow-[0_0_12px_rgba(168,85,247,0.3)]'
-            }`}
-          >
-            {metrics.dailyPillTaken ? 'TAKEN' : 'LOG [P]'}
-          </button>
         </div>
 
-        <div className="mt-3 flex items-center justify-between text-[11px] font-mono text-slate-400 border-t border-space-800 pt-2">
-          <span>Estrogenic Load: <strong className="text-purple-300">{metrics.estrogenLoadIndex}%</strong></span>
-          <span>Progestin: Steady</span>
-        </div>
-      </div>
-
-      {/* 5. HYDRATION & PLASMA VOLUME */}
-      <div className="p-4 rounded-xl border bg-space-900/80 border-space-800">
-        <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-1">
-          <div className="flex items-center gap-1.5">
-            <Droplet className="w-4 h-4 text-cyan-400" />
-            <span className="font-semibold tracking-wider">HYDRATION & HEMOCONCENTRATION</span>
-          </div>
-          <button
-            onClick={() => onOpenCountermeasure('HYDRATION')}
-            className="text-[10px] text-cyan-400 hover:text-cyan-300 flex items-center gap-0.5"
-          >
-            FLUIDS <ArrowUpRight className="w-3 h-3" />
-          </button>
-        </div>
-
-        <div className="flex items-baseline gap-2 mt-2">
-          <span className={`text-3xl font-mono font-black ${
-            metrics.hydrationDeficitPct > 15 ? 'text-hud-amber' : 'text-slate-100'
-          }`}>
-            -{metrics.hydrationDeficitPct}%
-          </span>
-          <span className="text-xs font-mono text-slate-400">DEFICIT</span>
-          <span className="text-[11px] font-mono ml-auto text-slate-400">
-            {metrics.hydrationDeficitPct > 15 ? 'HYPOVOLEMIA RISK' : 'OPTIMAL'}
-          </span>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between text-[11px] font-mono text-slate-400 border-t border-space-800 pt-2">
-          <span>Target: &lt; 8% deficit</span>
-          <span className="text-cyan-400">Electrolyte Balance: 98%</span>
-        </div>
-      </div>
-
-      {/* 6. CARDIAC & CABIN PERFUSION */}
-      <div className="p-4 rounded-xl border bg-space-900/80 border-space-800">
-        <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-1">
-          <div className="flex items-center gap-1.5">
-            <Heart className="w-4 h-4 text-hud-red" />
-            <span className="font-semibold tracking-wider">CARDIAC & OXYGENATION</span>
-          </div>
-          <span className="text-[10px] text-slate-400 font-mono">CONTINUOUS</span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 mt-2">
-          <div>
-            <span className="text-[10px] font-mono text-slate-500">HEART RATE</span>
-            <div className="text-2xl font-mono font-black text-slate-100">{metrics.heartRate} <span className="text-xs font-normal text-slate-400">bpm</span></div>
-          </div>
-          <div>
-            <span className="text-[10px] font-mono text-slate-500">BLOOD PRESSURE</span>
-            <div className="text-2xl font-mono font-black text-slate-100">{metrics.bloodPressureSys}/{metrics.bloodPressureDia}</div>
-          </div>
-        </div>
-
-        <div className="mt-3 flex items-center justify-between text-[11px] font-mono text-slate-400 border-t border-space-800 pt-2">
-          <span>SpO₂: <strong className="text-hud-green">{metrics.spO2}%</strong></span>
-          <span>Temp: <strong className="text-slate-200">{metrics.tempCelsius}°C</strong></span>
+        <div className="mt-3 pt-2.5 border-t border-venus-border/60 flex items-center justify-between text-[11px] text-slate-400">
+          <span>Oxígeno: <strong className="text-emerald-300">{metrics.spO2}%</strong></span>
+          <span>Temperatura: <strong className="text-slate-200">{metrics.tempCelsius}°C</strong></span>
         </div>
       </div>
     </div>

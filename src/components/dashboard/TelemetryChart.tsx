@@ -1,11 +1,10 @@
 // ==============================================================================
-// V.E.N.U.S. Multi-Day Telemetry Trend Visualizer
-// Interactive SVG chart displaying 14-day mission telemetry
+// V.E.N.U.S. Multi-Day Telemetry Trend Visualizer (Soft & Luminous Design)
 // ==============================================================================
 
 import React, { useState } from 'react';
 import { HISTORICAL_14_DAYS, HistoricalTelemetryDay } from '../../data/scenarios';
-import { TrendingUp, Calendar } from 'lucide-react';
+import { TrendingUp, Calendar, Heart } from 'lucide-react';
 
 export const TelemetryChart: React.FC = () => {
   const [hoveredDay, setHoveredDay] = useState<HistoricalTelemetryDay | null>(null);
@@ -18,7 +17,6 @@ export const TelemetryChart: React.FC = () => {
   const plotWidth = width - padding.left - padding.right;
   const plotHeight = height - padding.top - padding.bottom;
 
-  // Scale calculations
   const minDay = data[0].day;
   const maxDay = data[data.length - 1].day;
 
@@ -26,34 +24,48 @@ export const TelemetryChart: React.FC = () => {
   const getYVsi = (vsi: number) => padding.top + plotHeight - (vsi / 100) * plotHeight;
   const getYVelocity = (v: number) => padding.top + plotHeight - (v / 30) * plotHeight;
 
-  // Polyline points
   const pointsVsi = data.map((d) => `${getX(d.day)},${getYVsi(d.vsi)}`).join(' ');
   const pointsVelocity = data.map((d) => `${getX(d.day)},${getYVelocity(d.jugularVelocity)}`).join(' ');
 
   return (
-    <div className="p-4 bg-space-900/80 border border-space-800 rounded-xl backdrop-blur shadow-lg">
-      <div className="flex items-center justify-between mb-2">
+    <div className="p-5 bg-venus-900/60 border border-venus-border rounded-3xl backdrop-blur-xl shadow-soft-glass">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-cyan-400" />
-          <span className="font-mono text-xs font-bold text-slate-200 tracking-wider">
-            14-DAY RETROSPECTIVE TREND // MARS TRANSIT
-          </span>
+          <div className="p-1.5 rounded-xl bg-venus-rose/15 text-venus-rose">
+            <TrendingUp className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-xs font-bold text-white block">
+              Evolución de Bienestar de los Últimos 14 Días
+            </span>
+            <span className="text-[11px] text-slate-400">
+              Trayecto interplanetario hacia Marte · Cmdr. Vance
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-4 text-[11px] font-mono">
+
+        <div className="flex items-center gap-4 text-xs">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-hud-red inline-block" />
-            <span className="text-slate-300">VSI %</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-venus-rose inline-block" />
+            <span className="text-slate-300">Retención/Estasis (%)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-hud-cyan inline-block" />
-            <span className="text-slate-300">Jugular Velocity (cm/s)</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-venus-teal inline-block" />
+            <span className="text-slate-300">Flujo Yugular (cm/s)</span>
           </div>
         </div>
       </div>
 
       <div className="relative w-full overflow-x-auto">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-44 drop-shadow">
-          {/* Horizontal Grid lines */}
+          <defs>
+            <linearGradient id="roseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#f472b6" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#f472b6" stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+
+          {/* Soft Grid lines */}
           {[0, 25, 50, 75, 100].map((val) => {
             const y = getYVsi(val);
             return (
@@ -63,57 +75,41 @@ export const TelemetryChart: React.FC = () => {
                   y1={y}
                   x2={width - padding.right}
                   y2={y}
-                  stroke="#1e2e54"
-                  strokeDasharray="3 3"
+                  stroke="rgba(244, 114, 182, 0.1)"
+                  strokeDasharray="4 4"
                   strokeWidth="1"
                 />
-                <text x={padding.left - 8} y={y + 4} fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="end">
+                <text x={padding.left - 8} y={y + 3.5} fill="#94a3b8" fontSize="9" fontFamily="sans-serif" textAnchor="end">
                   {val}%
                 </text>
               </g>
             );
           })}
 
-          {/* Critical Threshold Danger Zone for VSI > 70% */}
-          <rect
-            x={padding.left}
-            y={getYVsi(100)}
-            width={plotWidth}
-            height={getYVsi(70) - getYVsi(100)}
-            fill="#ff3366"
-            fillOpacity="0.08"
-          />
-
-          {/* Area fill under VSI */}
+          {/* Area under curve */}
           <polygon
             points={`${getX(minDay)},${padding.top + plotHeight} ${pointsVsi} ${getX(maxDay)},${padding.top + plotHeight}`}
-            fill="url(#vsiGradient)"
-            opacity="0.3"
+            fill="url(#roseGradient)"
           />
 
-          <defs>
-            <linearGradient id="vsiGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ff3366" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#ff3366" stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-
-          {/* Velocity Line (Cyan) */}
+          {/* Velocity Line (Teal) */}
           <polyline
             points={pointsVelocity}
             fill="none"
-            stroke="#00f2fe"
+            stroke="#2dd4bf"
             strokeWidth="2.5"
             strokeLinecap="round"
+            strokeLinejoin="round"
           />
 
-          {/* VSI Line (Red / Gradient) */}
+          {/* VSI Line (Rose) */}
           <polyline
             points={pointsVsi}
             fill="none"
-            stroke="#ff3366"
-            strokeWidth="2.5"
+            stroke="#f472b6"
+            strokeWidth="3"
             strokeLinecap="round"
+            strokeLinejoin="round"
           />
 
           {/* Data Points */}
@@ -132,18 +128,17 @@ export const TelemetryChart: React.FC = () => {
                   cx={x}
                   cy={yV}
                   r={isHovered ? 6 : 3.5}
-                  fill={d.vsi >= 70 ? '#ff3366' : '#fbbf24'}
+                  fill={d.vsi >= 70 ? '#fb7185' : '#f472b6'}
                   stroke="#ffffff"
-                  strokeWidth="1"
+                  strokeWidth="1.5"
                   className="transition-all"
                 />
-                {/* Day label on X-axis */}
                 <text
                   x={x}
                   y={height - 8}
-                  fill={isHovered ? '#00f2fe' : '#64748b'}
+                  fill={isHovered ? '#f472b6' : '#94a3b8'}
                   fontSize="9"
-                  fontFamily="monospace"
+                  fontFamily="sans-serif"
                   textAnchor="middle"
                   fontWeight={isHovered ? 'bold' : 'normal'}
                 >
@@ -156,16 +151,15 @@ export const TelemetryChart: React.FC = () => {
 
         {/* Hover inspection pill */}
         {hoveredDay && (
-          <div className="absolute top-2 right-4 bg-space-950/95 border border-cyan-400 p-2.5 rounded-lg text-xs font-mono shadow-xl backdrop-blur z-20">
-            <div className="text-cyan-300 font-bold flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>MISSION DAY {hoveredDay.day}</span>
+          <div className="absolute top-2 right-4 bg-venus-900/95 border border-venus-rose/50 p-3 rounded-2xl text-xs shadow-glow-rose backdrop-blur-md z-20">
+            <div className="text-venus-blush font-semibold flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-venus-rose" />
+              <span>Día de Misión {hoveredDay.day}</span>
             </div>
-            <div className="mt-1 space-y-0.5 text-slate-300 text-[11px]">
-              <div>VSI Score: <strong className="text-hud-red">{hoveredDay.vsi}%</strong></div>
-              <div>Jugular Flow: <strong className="text-hud-cyan">{hoveredDay.jugularVelocity} cm/s</strong></div>
-              <div>IOP Average: <strong className="text-amber-300">{hoveredDay.iopAvg} mmHg</strong></div>
-              <div>Hydration Deficit: <strong>-{hoveredDay.hydrationDeficit}%</strong></div>
+            <div className="mt-1.5 space-y-1 text-slate-200 text-[11px]">
+              <div>Retención Vascular: <strong className="text-venus-coral">{hoveredDay.vsi}%</strong></div>
+              <div>Flujo Yugular: <strong className="text-venus-teal">{hoveredDay.jugularVelocity} cm/s</strong></div>
+              <div>Presión Ocular (SANS): <strong className="text-amber-200">{hoveredDay.iopAvg} mmHg</strong></div>
             </div>
           </div>
         )}
