@@ -1,84 +1,94 @@
-# ==============================================================================
-# V.E.N.U.S. — NASA Space Apps Challenge Automation Makefile
-# Visual Engine for Neuro-endocrine & Universal Systems
-# ==============================================================================
-
-.PHONY: help install dev build preview up down logs restart docker-build docker-up docker-down docker-logs clean
-
-# Default target
 .DEFAULT_GOAL := help
+COMPOSE        = docker compose
+COMPOSE_DEV    = docker compose -f docker-compose.dev.yml
 
-# Colors for terminal output
-BLUE   := \033[36m
-GREEN  := \033[32m
-YELLOW := \033[33m
-RED    := \033[31m
-RESET  := \033[0m
+##@ Help
+.PHONY: help
+help:  ## Show this help
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-help: ## Show this help message
-	@echo ""
-	@echo "$(BLUE)══════════════════════════════════════════════════════════════════$(RESET)"
-	@echo "$(BLUE)   V.E.N.U.S. - NASA Health Monitoring System Makefile           $(RESET)"
-	@echo "$(BLUE)══════════════════════════════════════════════════════════════════$(RESET)"
-	@echo ""
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(GREEN)%-18s$(RESET) %s\n", $$1, $$2}'
-	@echo ""
+##@ Development
+.PHONY: dev
+dev: ## Start dev environment (hot-reload)
+	cp -n .env.example .env 2>/dev/null || true
+	$(COMPOSE_DEV) up --build
 
-# ------------------------------------------------------------------------------
-# Local Development Targets
-# ------------------------------------------------------------------------------
+.PHONY: dev-down
+dev-down: ## Stop dev environment
+	$(COMPOSE_DEV) down
 
-install: ## Install dependencies on local machine
-	@echo "$(BLUE)📦 Installing node dependencies...$(RESET)"
-	npm install
+##@ Database
+.PHONY: migrate
+migrate: ## Run database migrations
+	$(COMPOSE_DEV) exec backend npm run db:migrate
 
-dev: ## Run Vite development server locally on port 5173
-	@echo "$(GREEN)🚀 Starting local Vite dev server at http://localhost:5173...$(RESET)"
-	npm run dev
+.PHONY: migrate-prod
+migrate-prod: ## Run migrations in production
+	$(COMPOSE) exec backend npm run db:migrate
 
-build: ## Type-check and compile production bundle to dist/
-	@echo "$(BLUE)🛠️ Compiling production build...$(RESET)"
-	npm run build
-	@echo "$(GREEN)✅ Build complete in ./dist!$(RESET)"
+.PHONY: studio
+studio: ## Open Drizzle Studio (DB GUI)
+	$(COMPOSE_DEV) exec backend npm run db:studio
 
-preview: ## Preview the production build locally
-	@echo "$(BLUE)👀 Previewing production build...$(RESET)"
-	npm run preview
+.PHONY: db-reset
+db-reset: ## Drop & recreate DB volume (⚠ destroys data)
+	$(COMPOSE_DEV) down -v
+	$(COMPOSE_DEV) up -d db redis
+	$(COMPOSE_DEV) exec backend npm run db:migrate
 
-# ------------------------------------------------------------------------------
-# Docker Targets (Cross-platform compatibility)
-# ------------------------------------------------------------------------------
+##@ Production
+.PHONY: build
+build: ## Build production images
+	$(COMPOSE) build
 
-docker-build: ## Build Docker image using docker-compose
-	@echo "$(BLUE)🐳 Building Docker image...$(RESET)"
-	docker compose build
+.PHONY: up
+up: ## Start production environment
+	cp -n .env.example .env 2>/dev/null || true
+	$(COMPOSE) up -d
 
-up: docker-up ## Alias for docker-up
-docker-up: ## Start application container with Docker Compose (hot-reload enabled)
-	@echo "$(GREEN)🛸 Launching V.E.N.U.S. container on http://localhost:5173...$(RESET)"
-	docker compose up -d
-	@echo "$(GREEN)✨ Service is up! Run 'make logs' to watch telemetry output.$(RESET)"
+.PHONY: down
+down: ## Stop production environment
+	$(COMPOSE) down
 
-down: docker-down ## Alias for docker-down
-docker-down: ## Stop and remove Docker containers
-	@echo "$(YELLOW)🛑 Stopping V.E.N.U.S. containers...$(RESET)"
-	docker compose down
+##@ Utilities
+.PHONY: logs
+logs: ## Tail all container logs
+	$(COMPOSE_DEV) logs -f
 
-logs: docker-logs ## Alias for docker-logs
-docker-logs: ## Follow live logs from the running Docker container
-	docker compose logs -f
+.PHONY: logs-be
+logs-be: ## Tail backend logs
+	$(COMPOSE_DEV) logs -f backend
 
-restart: ## Restart Docker containers
-	@echo "$(YELLOW)🔄 Restarting containers...$(RESET)"
-	docker compose restart
-	@echo "$(GREEN)✨ Restarted successfully.$(RESET)"
+.PHONY: logs-fe
+logs-fe: ## Tail frontend logs
+	$(COMPOSE_DEV) logs -f frontend
 
-docker-rebuild: ## Clean rebuild of Docker images (no-cache)
-	@echo "$(BLUE)🔄 Rebuilding Docker containers from scratch...$(RESET)"
-	docker compose build --no-cache
-	docker compose up -d
+.PHONY: logs-db
+logs-db: ## Tail DB logs
+	$(COMPOSE_DEV) logs -f db
 
-clean: ## Clean node_modules, build artifacts and lockfiles
-	@echo "$(RED)🧹 Cleaning build artifacts and cache...$(RESET)"
-	rm -rf dist node_modules .vite
-	@echo "$(GREEN)✅ Cleaned.$(RESET)"
+.PHONY: shell-be
+shell-be: ## Open shell in backend container
+	$(COMPOSE_DEV) exec backend sh
+
+.PHONY: shell-fe
+shell-fe: ## Open shell in frontend container
+	$(COMPOSE_DEV) exec frontend sh
+
+.PHONY: shell-db
+shell-db: ## Open psql in DB container
+	$(COMPOSE_DEV) exec db psql -U nasa -d hackathon
+
+.PHONY: shell-redis
+shell-redis: ## Open redis-cli
+	$(COMPOSE_DEV) exec redis redis-cli -a redis_secret
+
+.PHONY: clean
+clean: ## Remove containers, volumes and images
+	$(COMPOSE) down -v --rmi all --remove-orphans
+	$(COMPOSE_DEV) down -v --rmi all --remove-orphans
+
+.PHONY: install
+install: ## Install deps locally (outside Docker)
+	cd frontend && npm install
+	cd backend && npm install
