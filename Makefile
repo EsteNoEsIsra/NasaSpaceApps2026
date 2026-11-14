@@ -17,6 +17,10 @@ dev: ## Start dev environment (hot-reload)
 dev-down: ## Stop dev environment
 	$(COMPOSE_DEV) down
 
+.PHONY: restart
+restart: ## Restart dev environment containers
+	$(COMPOSE_DEV) restart
+
 ##@ Database
 .PHONY: migrate
 migrate: ## Run database migrations
@@ -31,10 +35,16 @@ studio: ## Open Drizzle Studio (DB GUI)
 	$(COMPOSE_DEV) exec backend npm run db:studio
 
 .PHONY: db-reset
-db-reset: ## Drop & recreate DB volume (⚠ destroys data)
+db-reset: ## Drop & recreate DB volume, start backend & run migrations (⚠ destroys data)
 	$(COMPOSE_DEV) down -v
 	$(COMPOSE_DEV) up -d db redis
+	@echo "⏳ Waiting for database to be healthy..."
+	@sleep 4
+	$(COMPOSE_DEV) up -d backend
+	@echo "⏳ Waiting for backend container to stabilize..."
+	@sleep 3
 	$(COMPOSE_DEV) exec backend npm run db:migrate
+	@echo "✅ Database successfully reset and migrated!"
 
 ##@ Production
 .PHONY: build
@@ -84,7 +94,7 @@ shell-redis: ## Open redis-cli
 	$(COMPOSE_DEV) exec redis redis-cli -a redis_secret
 
 .PHONY: clean
-clean: ## Remove containers, volumes and images
+clean: ## Remove containers, volumes and images completely
 	$(COMPOSE) down -v --rmi all --remove-orphans
 	$(COMPOSE_DEV) down -v --rmi all --remove-orphans
 
