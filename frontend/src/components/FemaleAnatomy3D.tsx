@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { RotateCcw, ZoomIn, ZoomOut, ShieldAlert, CheckCircle2, Info } from 'lucide-react';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { RotateCcw, ZoomIn, ZoomOut, ShieldAlert, CheckCircle2, Info, Loader2 } from 'lucide-react';
 import type { BodySystemId, Severity } from '@/types/hera';
+import femaleAnatomyUrl from '@/assets/female_anatomy.fbx?url';
 
 interface SystemConfig {
   id: BodySystemId;
@@ -21,7 +23,7 @@ const BODY_SYSTEMS: SystemConfig[] = [
     shortTag: 'SANS / CO2',
     yPos: 0.78,
     xPos: 0.04,
-    zPos: 0.11,
+    zPos: 0.12,
     whyMeasured:
       'Separates cephalad fluid shift (SANS) and cabin CO2 pockets from estrogen-related headaches.',
     selfExamTip:
@@ -33,7 +35,7 @@ const BODY_SYSTEMS: SystemConfig[] = [
     shortTag: 'VTE / HR',
     yPos: 0.34,
     xPos: 0.06,
-    zPos: 0.12,
+    zPos: 0.14,
     whyMeasured:
       'Tracks venous stasis in 0g combined with exogenous estrogen clotting dynamics.',
     selfExamTip:
@@ -45,7 +47,7 @@ const BODY_SYSTEMS: SystemConfig[] = [
     shortTag: 'BMD / ARED',
     yPos: 0.04,
     xPos: -0.05,
-    zPos: 0.08,
+    zPos: 0.11,
     whyMeasured:
       'Balances estrogen osteoprotection against microgravity bone demineralization.',
     selfExamTip:
@@ -57,7 +59,7 @@ const BODY_SYSTEMS: SystemConfig[] = [
     shortTag: 'pH / FLORA',
     yPos: -0.22,
     xPos: 0.0,
-    zPos: 0.12,
+    zPos: 0.13,
     whyMeasured:
       'Monitors urogenital pH shifts caused by continuous OCPs + spaceflight immune modulation.',
     selfExamTip:
@@ -80,6 +82,8 @@ interface FemaleAnatomy3DProps {
   bodyTemp: number;
   baselineTemp: number;
   privacyMode: boolean;
+  modelUrl?: string;
+  useHolographicMaterial?: boolean;
 }
 
 export function FemaleAnatomy3D({
@@ -90,9 +94,14 @@ export function FemaleAnatomy3D({
   bodyTemp,
   baselineTemp,
   privacyMode,
+  modelUrl = femaleAnatomyUrl,
+  useHolographicMaterial = true,
 }: FemaleAnatomy3DProps) {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const [projectedPoints, setProjectedPoints] = useState<ProjectedPoint[]>([]);
+  const [isLoadingModel, setIsLoadingModel] = useState<boolean>(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   const zoomRef = useRef<number>(3.35);
   const targetRotYRef = useRef<number>(0.15);
   const isDraggingRef = useRef<boolean>(false);
@@ -106,6 +115,9 @@ export function FemaleAnatomy3D({
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
+
+    setIsLoadingModel(true);
+    setLoadError(null);
 
     const scene = new THREE.Scene();
 
@@ -147,95 +159,58 @@ export function FemaleAnatomy3D({
       clearcoat: 0.35,
       clearcoatRoughness: 0.3,
       transparent: true,
-      opacity: 0.93,
+      opacity: 0.9,
     });
 
-    const innerCoreMaterial = new THREE.MeshBasicMaterial({
-      color: 0xdf5a49,
-      transparent: true,
-      opacity: 0.14,
-      wireframe: true,
-    });
+    const loader = new FBXLoader();
+    let loadedModel: THREE.Group | null = null;
 
-    const torsoPoints: THREE.Vector2[] = [
-      new THREE.Vector2(0.05, -0.36),
-      new THREE.Vector2(0.18, -0.32),
-      new THREE.Vector2(0.245, -0.23),
-      new THREE.Vector2(0.255, -0.14),
-      new THREE.Vector2(0.225, -0.04),
-      new THREE.Vector2(0.165, 0.08),
-      new THREE.Vector2(0.162, 0.14),
-      new THREE.Vector2(0.195, 0.25),
-      new THREE.Vector2(0.215, 0.36),
-      new THREE.Vector2(0.225, 0.45),
-      new THREE.Vector2(0.115, 0.53),
-      new THREE.Vector2(0.068, 0.58),
-      new THREE.Vector2(0.064, 0.69),
-    ];
-    const torsoGeo = new THREE.LatheGeometry(torsoPoints, 48);
-    const torsoMesh = new THREE.Mesh(torsoGeo, bodyMaterial);
-    torsoMesh.scale.set(1.16, 1.0, 0.72);
-    figureGroup.add(torsoMesh);
+    loader.load(
+      modelUrl,
+      (fbx) => {
+        loadedModel = fbx;
 
-    const torsoWire = new THREE.Mesh(torsoGeo, innerCoreMaterial);
-    torsoWire.scale.set(1.13, 0.99, 0.69);
-    figureGroup.add(torsoWire);
+        // 1. Aplicar material holográfico translúcido si está activado
+        if (useHolographicMaterial) {
+          fbx.traverse((child) => {
+            if ((child as THREE.Mesh).isMesh) {
+              const mesh = child as THREE.Mesh;
+              mesh.material = bodyMaterial;
+            }
+          });
+        }
 
-    const bustGeo = new THREE.SphereGeometry(0.095, 28, 28);
-    const leftBust = new THREE.Mesh(bustGeo, bodyMaterial);
-    leftBust.position.set(-0.088, 0.33, 0.105);
-    leftBust.scale.set(1.0, 0.95, 0.82);
-    figureGroup.add(leftBust);
+        // Si el FBX viene tumbado en el suelo, descomenta la siguiente línea:
+        // fbx.rotation.x = -Math.PI / 2;
 
-    const rightBust = new THREE.Mesh(bustGeo, bodyMaterial);
-    rightBust.position.set(0.088, 0.33, 0.105);
-    rightBust.scale.set(1.0, 0.95, 0.82);
-    figureGroup.add(rightBust);
+        // 2. Normalizar escala (de cm a unidades de escena) y centrar
+        const box = new THREE.Box3().setFromObject(fbx);
+        const size = new THREE.Vector3();
+        box.getSize(size);
 
-    const headGeo = new THREE.SphereGeometry(0.115, 36, 36);
-    const headMesh = new THREE.Mesh(headGeo, bodyMaterial);
-    headMesh.position.set(0, 0.81, 0.01);
-    headMesh.scale.set(0.86, 1.08, 0.95);
-    figureGroup.add(headMesh);
+        const targetHeight = 2.18;
+        const scaleFactor = size.y > 0 ? targetHeight / size.y : 1;
+        fbx.scale.setScalar(scaleFactor);
 
-    const addLimbSegment = (
-      x1: number,
-      y1: number,
-      z1: number,
-      x2: number,
-      y2: number,
-      z2: number,
-      rTop: number,
-      rBot: number
-    ) => {
-      const start = new THREE.Vector3(x1, y1, z1);
-      const end = new THREE.Vector3(x2, y2, z2);
-      const mid = start.clone().add(end).multiplyScalar(0.5);
-      const len = start.distanceTo(end);
+        // Recalcular caja tras escalar para apoyar los pies en baseRing1 (y = -1.28)
+        const scaledBox = new THREE.Box3().setFromObject(fbx);
+        const scaledCenter = new THREE.Vector3();
+        scaledBox.getCenter(scaledCenter);
 
-      const geo = new THREE.CylinderGeometry(rTop, rBot, len, 24);
-      const mesh = new THREE.Mesh(geo, bodyMaterial);
-      mesh.position.copy(mid);
-      mesh.quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 1, 0),
-        end.clone().sub(start).normalize()
-      );
-      figureGroup.add(mesh);
+        fbx.position.x = -scaledCenter.x;
+        fbx.position.z = -scaledCenter.z;
+        fbx.position.y = -1.28 - scaledBox.min.y;
 
-      const joint = new THREE.Mesh(new THREE.SphereGeometry(rTop * 1.02, 20, 20), bodyMaterial);
-      joint.position.copy(start);
-      figureGroup.add(joint);
-    };
-
-    addLimbSegment(-0.27, 0.45, 0.0, -0.35, 0.12, 0.02, 0.056, 0.044);
-    addLimbSegment(-0.35, 0.12, 0.02, -0.41, -0.22, 0.07, 0.043, 0.031);
-    addLimbSegment(0.27, 0.45, 0.0, 0.35, 0.12, 0.02, 0.056, 0.044);
-    addLimbSegment(0.35, 0.12, 0.02, 0.41, -0.22, 0.07, 0.043, 0.031);
-
-    addLimbSegment(-0.125, -0.27, 0.0, -0.145, -0.78, 0.01, 0.095, 0.064);
-    addLimbSegment(-0.145, -0.78, 0.01, -0.155, -1.26, -0.01, 0.062, 0.041);
-    addLimbSegment(0.125, -0.27, 0.0, 0.145, -0.78, 0.01, 0.095, 0.064);
-    addLimbSegment(0.145, -0.78, 0.01, 0.155, -1.26, -0.01, 0.062, 0.041);
+        figureGroup.add(fbx);
+        setIsLoadingModel(false);
+      },
+      undefined,
+      (error) => {
+        console.error('Error cargando modelo FBX:', error);
+        setLoadError('No se pudo cargar el modelo 3D (.fbx).');
+        setIsLoadingModel(false);
+      }
+    );
 
     const ringGeo1 = new THREE.RingGeometry(0.46, 0.472, 64);
     const ringMat = new THREE.MeshBasicMaterial({
@@ -375,12 +350,16 @@ export function FemaleAnatomy3D({
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);
+      if (loadedModel) {
+        figureGroup.remove(loadedModel);
+      }
+      bodyMaterial.dispose();
       renderer.dispose();
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [modelUrl, useHolographicMaterial]);
 
   const activeSystemInfo =
     BODY_SYSTEMS.find((s) => s.id === selectedSystem) ?? BODY_SYSTEMS[1];
@@ -390,6 +369,23 @@ export function FemaleAnatomy3D({
 
   return (
     <div className="relative w-full h-[460px] select-none">
+      {isLoadingModel && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none">
+          <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-full border border-[#E6DFDA] shadow-sm text-xs text-[#5A5054]">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-[#DF5A49]" />
+            <span>Cargando anatomía 3D...</span>
+          </div>
+        </div>
+      )}
+
+      {loadError && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+          <div className="bg-red-50/95 text-[#D93829] px-3.5 py-2 rounded-xl border border-red-200 text-xs font-medium">
+            {loadError}
+          </div>
+        </div>
+      )}
+
       {/* Top-right 3D camera controls */}
       <div className="absolute top-2 right-2 z-20 flex items-center gap-1.5 bg-white/85 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-[#E6DFDA] shadow-xs">
         <button
