@@ -17,6 +17,7 @@
     "three": "^0.173.0"
   },
   "devDependencies": {
+    "@rollup/rollup-linux-arm64-musl": "^4.68.3",
     "@tailwindcss/vite": "^4.0.9",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
