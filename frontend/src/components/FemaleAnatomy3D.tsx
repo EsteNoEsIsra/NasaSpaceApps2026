@@ -23,7 +23,7 @@ const BODY_SYSTEMS: SystemConfig[] = [
     id: 'neuro-ocular',
     label: 'Neuro-Ocular & Cabin Differential',
     shortTag: 'SANS / CO2',
-    yOffset: 0.75, // Cabeza
+    yOffset: 0.75,
     xOffset: 0.0,
     zOffset: 0.05,
     whyMeasured: 'Separates cephalad fluid shift (SANS) and cabin CO2 pockets from estrogen-related headaches.',
@@ -33,7 +33,7 @@ const BODY_SYSTEMS: SystemConfig[] = [
     id: 'cardiovascular',
     label: 'Cardiovascular & Venous Return',
     shortTag: 'VTE / HR',
-    yOffset: 0.35, // Tórax superior / Esternón
+    yOffset: 0.35,
     xOffset: 0.0,
     zOffset: 0.08,
     whyMeasured: 'Tracks venous stasis in 0g combined with exogenous estrogen clotting dynamics.',
@@ -43,7 +43,7 @@ const BODY_SYSTEMS: SystemConfig[] = [
     id: 'skeletal',
     label: 'Skeletal & Endocrine Bone Buffer',
     shortTag: 'BMD / ARED',
-    yOffset: 0.18, // Pelvis alta / crestas ilíacas
+    yOffset: 0.18,
     xOffset: 0.0,
     zOffset: 0.06,
     whyMeasured: 'Balances estrogen osteoprotection against microgravity bone demineralization.',
@@ -53,7 +53,7 @@ const BODY_SYSTEMS: SystemConfig[] = [
     id: 'urogenital',
     label: 'Microbiome & Urogenital Immunity',
     shortTag: 'pH / FLORA',
-    yOffset: 0.02, // Zona urogenital / bajo vientre
+    yOffset: 0.02,
     xOffset: 0.0,
     zOffset: 0.06,
     whyMeasured: 'Monitors urogenital pH shifts caused by continuous OCPs + spaceflight immune modulation.',
@@ -84,7 +84,7 @@ interface ProjectedPoint {
 interface FemaleAnatomy3DProps {
   selectedSystem: BodySystemId | null;
   onSelectSystem: (sys: BodySystemId | null) => void;
-  systemSeverities: Record<BodySystemId, Severity>;
+  systemSeverities?: Record<BodySystemId, Severity>;
   co2Level: number;
   bodyTemp: number;
   baselineTemp: number;
@@ -97,7 +97,7 @@ interface FemaleAnatomy3DProps {
 export function FemaleAnatomy3D({
   selectedSystem,
   onSelectSystem,
-  systemSeverities,
+  systemSeverities = { 'neuro-ocular': 'info', 'cardiovascular': 'info', 'skeletal': 'info', 'urogenital': 'info' },
   co2Level,
   bodyTemp,
   baselineTemp,
@@ -186,7 +186,6 @@ export function FemaleAnatomy3D({
     const figureGroup = new THREE.Group();
     scene.add(figureGroup);
 
-    // Material translúcido estilo holográfico médico
     const translucentMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xf2ded9,
       roughness: 0.25,
@@ -243,7 +242,6 @@ export function FemaleAnatomy3D({
           figureGroup.add(anchor);
           hotspotAnchors[sys.id] = anchor;
 
-          // Únicamente la esfera central nominal (sin aros ni halos geométricos que rayen el modelo)
           const coreGeo = new THREE.SphereGeometry(0.015, 16, 16);
           const coreMat = new THREE.MeshBasicMaterial({ color: 0x2a9d8f });
           const core = new THREE.Mesh(coreGeo, coreMat);
@@ -275,9 +273,9 @@ export function FemaleAnatomy3D({
     const clock = new THREE.Clock();
 
     const getSeverityHex = (sev: Severity): number => {
-      if (sev === 'critical') return 0xdf5a49; // Alerta
-      if (sev === 'warning') return 0xb45309;  // Precaución
-      return 0x2a9d8f;                          // Nominal
+      if (sev === 'critical') return 0xdf5a49; // Rojo
+      if (sev === 'warning') return 0xe9c46a;  // Amarillo
+      return 0x2a9d8f;                          // Verde
     };
 
     const animate = () => {
@@ -388,7 +386,10 @@ export function FemaleAnatomy3D({
               <div className="relative">
                 <Icon className="w-5 h-5" />
                 {severity === 'critical' && (
-                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[var(--act)] animate-pulse" />
+                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#DF5A49] animate-pulse" />
+                )}
+                {severity === 'warning' && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#E9C46A]" />
                 )}
               </div>
               <span className="text-[13px] leading-tight text-center mt-2 truncate w-full font-medium">
@@ -413,7 +414,7 @@ export function FemaleAnatomy3D({
 
         {loadError && (
           <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
-            <div className="bg-red-50/95 text-[var(--act)] px-3.5 py-2 rounded-xl border border-red-200 text-xs font-medium">
+            <div className="bg-red-50/95 text-[#DF5A49] px-3.5 py-2 rounded-xl border border-red-200 text-xs font-medium">
               {loadError}
             </div>
           </div>
@@ -447,7 +448,7 @@ export function FemaleAnatomy3D({
           </button>
         </div>
 
-        {/* WebGL Canvas with free mouse drag rotation */}
+        {/* WebGL Canvas */}
         <div
           ref={mountRef}
           onPointerDown={(e) => {
@@ -469,7 +470,7 @@ export function FemaleAnatomy3D({
           className="w-full flex-1 my-auto cursor-grab active:cursor-grabbing min-h-[520px]"
         />
 
-        {/* Projected 2D Hotspot Badges */}
+        {/* Projected 2D Hotspot Badges (Semáforo exacto: Rojo, Amarillo, Verde) */}
         {projectedPoints.map((pt) => {
           if (!pt.visible) return null;
 
@@ -481,9 +482,9 @@ export function FemaleAnatomy3D({
           const badgeColor = isSelected
             ? 'bg-[#7c529e] text-white border-[#7c529e] ring-4 ring-[#7c529e]/30 scale-105 shadow-xl'
             : sev === 'critical'
-              ? 'bg-[var(--act)] text-white border-[var(--act)] ring-4 ring-[var(--act)]/30 animate-bounce'
+              ? 'bg-[#DF5A49] text-white border-[#DF5A49] ring-4 ring-[#DF5A49]/30 animate-bounce shadow-[0_0_16px_rgba(223,90,73,0.6)]'
               : sev === 'warning'
-                ? 'bg-[var(--watch)] text-white border-[var(--watch)] ring-4 ring-[var(--watch)]/20'
+                ? 'bg-[#E9C46A] text-[#1A1517] border-[#E9C46A] ring-4 ring-[#E9C46A]/30 shadow-[0_0_12px_rgba(233,196,106,0.5)] font-bold'
                 : 'bg-white/95 text-[var(--ink)] border-[#E4DDD8] hover:border-[var(--accent)] ring-2 ring-black/5 shadow-sm';
 
           return (
@@ -512,8 +513,10 @@ export function FemaleAnatomy3D({
             <div className="flex items-center gap-1.5">
               {activeSeverity === 'info' ? (
                 <CheckCircle2 className="w-4 h-4 text-[var(--ok)] shrink-0" />
+              ) : activeSeverity === 'warning' ? (
+                <ShieldAlert className="w-4 h-4 text-[#E9C46A] shrink-0" />
               ) : (
-                <ShieldAlert className="w-4 h-4 text-[var(--act)] shrink-0" />
+                <ShieldAlert className="w-4 h-4 text-[#DF5A49] shrink-0" />
               )}
               <span className="text-[14px] font-semibold text-[var(--ink)]">
                 {selectedSystem ? activeSystemInfo.label : 'General Anatomy & Endocrine Regulation'}

@@ -67,7 +67,6 @@ export function BentoTelemetryGrid({
 
   const isPillTaken = checkin?.pillTaken ?? true;
 
-  // MOTOR CLÍNICO MULTIVECTORIAL: Cambia dinámicamente según el activeScenario
   const getScenarioTriage = () => {
     switch (activeScenario) {
       case 'co2_spike_dehydration':
@@ -125,17 +124,6 @@ export function BentoTelemetryGrid({
   ];
 
   const boneScore = balance.boneProtection.score;
-  const arcDots = Array.from({ length: 24 }, (_, idx) => {
-    const row = idx < 12 ? 0 : 1;
-    const col = idx % 12;
-    const angle = -165 + col * (150 / 11);
-    const radius = row === 0 ? 54 : 42;
-    const rad = (angle * Math.PI) / 180;
-    const x = 68 + Math.cos(rad) * radius;
-    const y = 66 + Math.sin(rad) * radius;
-    const active = ((col + 1) / 12) * 100 <= boneScore;
-    return { x, y, active, key: idx };
-  });
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -331,7 +319,7 @@ export function BentoTelemetryGrid({
         </div>
       </div>
 
-      {/* CARD 4: Anti-Bias Differential Diagnosis & Cabin ECLSS (Dinámico y Reactivo) */}
+      {/* CARD 4: Anti-Bias Differential Diagnosis & Cabin ECLSS */}
       <div
         onClick={onOpenTriage}
         className="md:col-span-4 obsidian-card rounded-3xl p-5 shadow-sm flex flex-col justify-between cursor-pointer group hover:ring-2 hover:ring-[#DF5A49]/50 transition-all"
@@ -358,7 +346,6 @@ export function BentoTelemetryGrid({
           </p>
         </div>
 
-        {/* Desglose Multi-Vector Dinámico */}
         <div className="mt-4 space-y-2">
           <div className="flex items-center justify-between text-[10px] font-mono-tech text-[#B5A8AC]">
             <span className="text-[#DF5A49] font-medium">{currentTriage.v1.label}: {currentTriage.v1.pct}%</span>
@@ -380,37 +367,64 @@ export function BentoTelemetryGrid({
         </div>
       </div>
 
-      {/* CARD 5: Bone Density Protection Arc */}
+      {/* CARD 5: Bone Shield & BMD Matrix (Rediseño con Línea Divisoria y Estructura Limpia) */}
       <div
         onClick={onOpenVascularBone}
-        className="md:col-span-4 bg-white rounded-3xl p-5 border border-[#E8E2DD] shadow-xs flex flex-col justify-between items-center text-center cursor-pointer group hover:border-[#DF5A49]/50 transition-all"
+        className="md:col-span-4 bg-white rounded-3xl p-5 border border-[#E8E2DD] shadow-xs flex flex-col justify-between cursor-pointer group hover:border-[#2A9D8F]/50 transition-all relative overflow-hidden"
       >
-        <div className="w-full flex items-center justify-between text-xs text-[#7A6F73]">
-          <span className="font-medium">Bone Shield</span>
-          <ShieldCheck className="w-4 h-4 text-[#2A9D8F]" />
-        </div>
-
-        <div className="relative w-[136px] h-[78px] mt-1">
-          <svg viewBox="0 0 136 78" className="w-full h-full">
-            {arcDots.map((dot) => (
-              <circle
-                key={dot.key}
-                cx={dot.x}
-                cy={dot.y}
-                r="3.2"
-                fill={dot.active ? '#DF5A49' : '#EAE3DF'}
-              />
-            ))}
-          </svg>
-        </div>
-
-        <div>
-          <div className="text-3xl font-light text-[#1A1517] tabular-nums">
-            {boneScore}
-            <span className="text-sm text-[#7A6F73]">/100</span>
+        {/* Cabecera */}
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <span className="text-xs font-bold text-[#1A1517] block tracking-tight">Bone Shield</span>
+            <span className="text-[10px] font-mono-tech uppercase text-[#7A6F73] tracking-wider">BMD MATRIX</span>
           </div>
-          <div className="text-[11px] text-[#7A6F73] mt-0.5">
-            {checkin?.exerciseMinutes ?? 60}m ARED · Estrogen Buffer
+          <span className="flex items-center gap-1 text-[10px] font-mono-tech uppercase text-[#2A9D8F] bg-[#2A9D8F]/10 px-2.5 py-1 rounded-full font-semibold shrink-0">
+            <ShieldCheck className="w-3.5 h-3.5" /> PROTECTED
+          </span>
+        </div>
+
+        {/* Bloque Central: Métrica y Barra */}
+        <div className="my-4 space-y-2.5">
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-3xl font-light tracking-tight text-[#1A1517] tabular-nums">
+                {boneScore}
+              </span>
+              <span className="text-xs font-mono-tech text-[#7A6F73]">
+                / 100 Index
+              </span>
+            </div>
+            <span className="text-[10px] font-mono-tech text-[#2A9D8F] font-semibold uppercase tracking-wide">
+              Optimal Density
+            </span>
+          </div>
+
+          <div className="w-full h-2 bg-[#F2ECE8] rounded-full overflow-hidden">
+            <div
+              style={{ width: `${boneScore}%` }}
+              className="h-full bg-[#2A9D8F] rounded-full transition-all duration-700 ease-out"
+            />
+          </div>
+        </div>
+
+        {/* Pie de Tarjeta con Línea Divisoria Interna */}
+        <div className="pt-3 border-t border-[#F2ECE8] space-y-2.5 text-[11px] font-mono-tech">
+          {/* Bloque ARED */}
+          <div className="flex items-center justify-between text-[#1A1517]">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#2A9D8F]" />
+              <span className="text-[#7A6F73]">ARED Exercise:</span>
+            </span>
+            <span className="font-semibold text-[#1A1517]">{checkin?.exerciseMinutes ?? 60}m (100%)</span>
+          </div>
+
+          {/* Línea divisoria sutil entre ARED y Estrogen Buffer */}
+          <div className="w-full h-[1px] bg-[#F5F1EE]" />
+
+          {/* Bloque Estrogen Buffer */}
+          <div className="flex items-center justify-between text-[10px] text-[#7A6F73]">
+            <span>Estrogen Buffer:</span>
+            <span className="text-[#6B4C7A] font-semibold uppercase">Active Regimen</span>
           </div>
         </div>
       </div>

@@ -1,48 +1,60 @@
 // frontend/src/data/telemetrySeed.ts
 
-export interface MissionScenario {
-  id: string;
-  name: string;
-  latencySeconds: number;
-  latencyLabel: string;
-  eclssCo2Percent: number; // Valor nominal seguro de cabina: 0.41%
-  eclssO2Percent: number;
-}
-
 export const SCENARIOS: Record<string, MissionScenario> = {
   gateway: {
     id: 'gateway',
-    name: 'Lunar Gateway',
+    name: 'Nominal Baseline (Lunar Gateway)',
     latencySeconds: 2.6,
     latencyLabel: '2.6s (Round trip)',
     eclssCo2Percent: 0.41,
     eclssO2Percent: 21.1,
+    severities: {
+      'neuro-ocular': 'info',
+      'cardiovascular': 'info',
+      'skeletal': 'info',
+      'urogenital': 'info',
+    },
   },
-  mars: {
-    id: 'mars',
-    name: 'Mars Transit',
-    latencySeconds: 1200, // ~20 min one-way / 40 min round trip
+  co2_spike_dehydration: {
+    id: 'co2_spike_dehydration',
+    name: 'Sim: CO₂ Spike + Dehydration',
+    latencySeconds: 2.6,
+    latencyLabel: '2.6s (Round trip)',
+    eclssCo2Percent: 1.15,
+    eclssO2Percent: 19.5,
+    severities: {
+      'neuro-ocular': 'critical', // ¡ROJO CRÍTICO!
+      'cardiovascular': 'warning',  // Amarillo (advertencia media)
+      'skeletal': 'info',
+      'urogenital': 'info',
+    },
+  },
+  sans_precursor: {
+    id: 'sans_precursor',
+    name: 'Sim: Neuro-Ocular SANS',
+    latencySeconds: 1200,
     latencyLabel: '40 min (Round trip)',
-    eclssCo2Percent: 0.38,
-    eclssO2Percent: 21.3,
+    eclssCo2Percent: 0.45,
+    eclssO2Percent: 21.0,
+    severities: {
+      'neuro-ocular': 'critical', // ¡ROJO CRÍTICO!
+      'cardiovascular': 'info',
+      'skeletal': 'warning',        // Amarillo
+      'urogenital': 'info',
+    },
   },
-};
-
-export const INITIAL_TELEMETRY = {
-  activeScenarioId: 'gateway',
-  water: {
-    consumedMl: 2275,
-    targetMl: 2500,
-    incrementMl: 250, // Unificado a +250 ml en toda la app
+  microbiome_immuno: {
+    id: 'microbiome_immuno',
+    name: 'Sim: Microbiome & pH',
+    latencySeconds: 1200,
+    latencyLabel: '40 min (Round trip)',
+    eclssCo2Percent: 0.41,
+    eclssO2Percent: 21.1,
+    severities: {
+      'neuro-ocular': 'info',
+      'cardiovascular': 'info',
+      'skeletal': 'info',
+      'urogenital': 'warning',      // Amarillo
+    },
   },
-  hrv: {
-    current: 66,
-    baseline: 65,
-    unit: 'ms',
-  },
-  basalTemp: {
-    baseline: 36.6,
-    matrixDays: 21, // Exactamente 21 celdas como pide el rótulo
-    historyValues: [36.6, 36.7, 36.6, 36.5, 36.8, 36.9, 36.6, 36.5, 36.6, 36.7, 36.8, 36.6, 36.5, 36.6, 36.7, 36.9, 36.8, 36.6, 36.5, 36.6, 36.7]
-  }
 };
