@@ -13,6 +13,7 @@ import { FemaleAnatomy3D } from '@/components/FemaleAnatomy3D';
 import { BentoTelemetryGrid } from '@/components/BentoTelemetryGrid';
 import { ActionDrawers, type ActiveDrawer } from '@/components/ActionDrawers';
 import { UserProfileModal } from '@/components/UserProfileModal';
+import heraLogoLight from '@/assets/hera-logo-on-light.svg';
 import type {
   BodySystemId,
   HeraDashboardData,
@@ -43,7 +44,6 @@ export default function Home() {
     profile: { baselineTemp: 36.6, baselineHRV: 68, targetHydrationMl: 2500, missionEnvironment: 'lunar-base', contraceptiveType: 'combined' },
     latestTelemetry: { co2Level: 0.41, o2Level: 21.1 },
     latestBiometric: { bodyTemp: 36.6, hrv: 68 },
-    // Fijo estrictamente en el Día 42 de la misión
     latestCheckin: { missionDay: 42, hydrationMl: 1000, exerciseMinutes: 60, sleepHours: 7.2, pillTaken: true, symptoms: [] },
     vascularBoneBalance: { thrombosis: { score: 20 }, boneProtection: { score: 85, level: 'nominal' } },
     alerts: [],
@@ -56,7 +56,6 @@ export default function Home() {
   const [privacyMode, setPrivacyMode] = useState(true);
   const [activeScenario, setActiveScenario] = useState<SimulationScenario>('nominal');
 
-  // States for User Profile Modal & Calibration
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [baselineTemp, setBaselineTemp] = useState(36.6);
   const [baselineHrv, setBaselineHrv] = useState(68);
@@ -82,7 +81,6 @@ export default function Home() {
     fetchDashboard();
   }, [fetchDashboard]);
 
-  // Mission environment change logic
   const handleEnvironmentChange = async (env: MissionEnvironment) => {
     const isTransit = env === 'transit-0g';
     const isLunar = env === 'lunar-base';
@@ -134,7 +132,6 @@ export default function Home() {
     }
   };
 
-  // Motor de Simulación Médica Avanzada (Efecto dominó clínico en toda la app)
   const handleScenarioChange = async (scenario: SimulationScenario) => {
     setActiveScenario(scenario);
 
@@ -156,7 +153,6 @@ export default function Home() {
       });
       if (res?.data) setData(res.data);
     } catch {
-      // Simulación clínica local robusta por cada escenario
       if (scenario === 'co2_spike_dehydration') {
         setData((prev) => ({
           ...prev,
@@ -298,27 +294,22 @@ export default function Home() {
     <div className="min-h-screen bg-[#F5F3F0] p-3 md:p-5">
       <div className="max-w-[1440px] mx-auto bg-white/75 backdrop-blur-md rounded-[32px] border border-[#E6DFDA] shadow-sm p-4 md:p-6">
         
-        {/* TOP NAVIGATION & MISSION CONTEXT BAR */}
+        {/* TOP NAVIGATION & CLEAN FULL-SIZE LOGO HEADER */}
         <header className="flex flex-wrap items-center justify-between gap-4 pb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[var(--accent)] flex items-center justify-center text-white shadow-xs">
-              <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <circle cx="12" cy="9" r="5" />
-                <path d="M12 14v7M9 18h6" strokeLinecap="round" />
-                <path d="M4 11c2.5-3.5 13.5-3.5 16 0" strokeOpacity="0.65" strokeLinecap="round" />
-              </svg>
+          
+          {/* LOGOTIPO A TAMAÑO COMPLETO SIN FONDO + TAG DE LA MISIÓN AL LADO */}
+          <div className="flex items-center gap-4">
+            <div className="h-10 flex items-center shrink-0">
+              <img 
+                src={heraLogoLight} 
+                alt="HERA Logo" 
+                className="h-full w-auto object-contain" 
+              />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold tracking-tight text-[var(--ink)]">HERA</span>
-                <span className="text-[10px] font-mono-tech uppercase px-2 py-0.5 rounded-full bg-[var(--accent)]/12 text-[var(--accent)] font-semibold">
-                  Day {missionDay} · {data.mission?.targetBody ?? 'Lunar Gateway'}
-                </span>
-              </div>
-              <p className="text-[14px] text-[var(--ink-muted)]">
-                Hormonal Evaluation and Regulation in Astronauts · Designed for Women in Space
-              </p>
-            </div>
+
+            <span className="text-[11px] font-mono-tech uppercase px-3 py-1 rounded-full bg-[var(--accent)]/12 text-[var(--accent)] font-semibold tracking-wide">
+              Day {missionDay} · {data.mission?.targetBody ?? 'Lunar Gateway'}
+            </span>
           </div>
 
           <nav className="flex flex-wrap items-center gap-1.5 bg-[#F5F3F0] p-1 rounded-full border border-[#E8E2DD]">

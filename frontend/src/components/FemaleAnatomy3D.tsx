@@ -119,13 +119,11 @@ export function FemaleAnatomy3D({
   const prevMouseYRef = useRef<number>(0);
   const targetRotXRef = useRef<number>(0);
 
-  // Semáforo inteligente garantizado: evalúa las props o fuerza rojo crítico si el CO2 o SANS está activo
   const getEffectiveSeverities = (): Record<BodySystemId, Severity> => {
-    // Si se pasa un nivel alto de CO2 o el entorno de SANS, forzamos rojo en neuro-ocular
     if (co2Level > 0.5) {
       return {
-        'neuro-ocular': 'critical', // ROJO PELIGRO
-        'cardiovascular': 'warning',  // Amarillo precaución
+        'neuro-ocular': 'critical',
+        'cardiovascular': 'warning',
         'skeletal': 'info',
         'urogenital': 'info',
       };
@@ -297,9 +295,9 @@ export function FemaleAnatomy3D({
     const clock = new THREE.Clock();
 
     const getSeverityHex = (sev: Severity): number => {
-      if (sev === 'critical') return 0xdf5a49; // Rojo Crítico
-      if (sev === 'warning') return 0xe9c46a;  // Amarillo Precaución
-      return 0x2a9d8f;                          // Verde Nominal
+      if (sev === 'critical') return 0xdf5a49; // Rojo
+      if (sev === 'warning') return 0xe9c46a;  // Amarillo
+      return 0x2a9d8f;                          // Verde
     };
 
     const animate = () => {
@@ -494,7 +492,7 @@ export function FemaleAnatomy3D({
           className="w-full flex-1 my-auto cursor-grab active:cursor-grabbing min-h-[520px]"
         />
 
-        {/* Projected 2D Hotspot Badges (Semáforo estricto: Rojo crítico, Amarillo precaución, Verde nominal) */}
+        {/* Projected 2D Hotspot Badges */}
         {projectedPoints.map((pt) => {
           if (!pt.visible) return null;
 

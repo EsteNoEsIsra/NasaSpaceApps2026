@@ -7,6 +7,7 @@ import { MetricModal } from './MetricModal';
 import { HrvChart } from './HrvChart';
 import { Term } from './Term';
 import type { BodySystemId } from '@/types/hera';
+import heraLogoLight from '@/assets/hera-logo-on-light.svg'; // Ajusta la ruta según la ubicación de tu logo
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'triage' | 'vascular' | 'intimate'>('overview');
@@ -85,16 +86,31 @@ export function Dashboard() {
         {/* Header and Status Banner */}
         <header className="flex flex-col gap-4 pb-4 border-b border-[#E8E2DD]">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight text-[#1A1517]">{currentScenario.name} · Mission Health</h1>
-              {/* Status Banner */}
-              <div className="flex items-center gap-2 mt-1">
-                <span className="h-2 w-2 rounded-full bg-[#2A9D8F] animate-pulse"></span>
-                <p className="text-sm text-[#2A9D8F] font-medium">All nominal · 1 recommendation for today</p>
+            
+            {/* Logo y título con hera-logo-on-light */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center overflow-hidden bg-white border border-[#E8E2DD] shadow-xs">
+                <img 
+                  src={heraLogoLight} 
+                  alt="HERA Logo" 
+                  className="w-full h-full object-contain p-1" 
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-semibold tracking-tight text-[#1A1517]">HERA</h1>
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono-tech font-medium bg-[#6B4C7A]/10 text-[#6B4C7A] border border-[#6B4C7A]/20">
+                    DAY 42 · LUNAR GATEWAY
+                  </span>
+                </div>
+                <p className="text-xs text-[#7A6F73] font-medium">
+                  Hormonal Evaluation and Regulation in Astronauts · Designed for Women in Space
+                </p>
               </div>
             </div>
             
-            {/* Location / Scenario Selector (Conectado a los escenarios de severidad) */}
+            {/* Location / Scenario Selector */}
             <div className="flex items-center gap-3 bg-white border border-[#E8E2DD] rounded-2xl p-2 shadow-2xs">
               <span className="text-xs text-[#7A6F73] px-2 font-mono-tech">Scenario / Hazard:</span>
               <select 
@@ -168,7 +184,6 @@ export function Dashboard() {
                 baselineTemp={36.6}
                 privacyMode={false}
                 onOpenMetricModal={(metricId) => {
-                  // Opcional: manejar apertura de modal métrica
                   console.log('Open metric modal:', metricId);
                 }}
               />
