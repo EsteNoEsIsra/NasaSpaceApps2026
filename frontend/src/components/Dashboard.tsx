@@ -1,160 +1,213 @@
-import React from 'react';
-import { HormonalBalanceDial } from './HormonalBalanceDial';
+// frontend/src/components/Dashboard.tsx
+
+import React, { useState, useEffect } from 'react';
+import { SCENARIOS, INITIAL_TELEMETRY } from '../data/telemetrySeed';
+import { BodyViewer, Callout } from './BodyViewer';
+import { MetricModal } from './MetricModal';
 import { HrvChart } from './HrvChart';
-import { BbtMatrix } from './BbtMatrix';
+import { Term } from './Term';
 
-export const Dashboard: React.FC = () => {
-  // Datos de HRV ajustados al eje acotado (55ms - 75ms)
-  const hrvData = [
-    { day: 35, value: 64 },
-    { day: 36, value: 65 },
-    { day: 37, value: 68 },
-    { day: 38, value: 67 },
-    { day: 39, value: 69 },
-    { day: 40, value: 65 },
-    { day: 41, value: 67 },
-    { day: 42, value: 66, isToday: true },
-  ];
+export function Dashboard() {
+  const [activeTab, setActiveTab] = useState<'overview' | 'triage' | 'vascular' | 'intimate'>('overview');
+  const [activeLayer, setActiveLayer] = useState<'circulation' | 'hormones' | 'bones'>('circulation');
+  const [scenarioId, setScenarioId] = useState<string>(INITIAL_TELEMETRY.activeScenarioId);
+  const [selectedCallout, setSelectedCallout] = useState<Callout | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
 
-  // Matriz térmica de 21 días exactos (3 semanas de ciclo)
-  const bbtDays = Array.from({ length: 21 }, (_, i) => {
-    const dayNum = i + 1;
-    let status: 'elevated' | 'baseline' | 'cool' = 'baseline';
-    let delta = 0.0;
-    
-    if (dayNum === 19 || dayNum === 20) {
-      status = 'elevated';
-      delta = 0.3;
-    } else if (dayNum % 4 === 0) {
-      status = 'cool';
-      delta = -0.2;
+  // Check for ?demo=1 query parameter in URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('demo') === '1') {
+      setIsDemoMode(true);
     }
+  }, []);
 
-    return {
-      day: dayNum,
-      temperatureDelta: delta,
-      status,
-      isToday: dayNum === 21,
-    };
-  });
+  const currentScenario = SCENARIOS[scenarioId] || SCENARIOS.gateway;
 
   return (
-    <div className="min-h-screen bg-[#FAF6F1] text-[#1F1A1B] p-6 lg:p-8 font-sans">
-      {/* Mission Control Header con MET */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 mb-8 border-b border-[#1F1A1B]/10 gap-4">
-        <div>
-          <div className="font-mono text-[0.6875rem] tracking-[0.14em] uppercase text-[#5F5551]">
-            HERA · MISSION CONTROL · ARTEMIS IV
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[#1F1A1B]">
-            Commander Elena Vance · Overview
-          </h1>
+    <div className="grid grid-cols-[88px_1fr] h-screen w-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
+      
+      {/* Column 1: Vertical sidebar layer navigation tablist */}
+      <aside 
+        role="tablist" 
+        aria-label="Body analysis layers"
+        className="border-r border-slate-800/60 flex flex-col items-center py-6 gap-6 z-20 bg-slate-900/90 backdrop-blur-md"
+      >
+        <div className="text-[10px] font-mono tracking-widest text-slate-500 uppercase rotate-[-90deg] mb-2 select-none">
+          Layers
         </div>
-        <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-xl border border-[#1F1A1B]/10 shadow-sm">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#2A9D8F] animate-pulse" />
-            <span className="font-mono text-xs uppercase tracking-wider">MET 042:07:12:33</span>
-          </div>
-          <span className="text-[#5F5551]">|</span>
-          <span className="font-mono text-xs text-[#5F5551]">Gateway Orbit</span>
-        </div>
-      </header>
-
-      {/* Main Bento Grid (12 Columns) */}
-      <main className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Columna Izquierda: Maniquí 3D y Gauge Separado */}
-        <section className="lg:col-span-5 flex flex-col gap-6">
-          <div className="bg-[#1A1315] text-white rounded-[24px] p-6 relative overflow-hidden border border-white/10 shadow-sm flex flex-col justify-between min-h-[420px]">
-            {/* Esquinas de registro tipo instrumento */}
-            <div className="absolute top-3 left-3 w-2 h-2 border-t border-l border-white/30" />
-            <div className="absolute top-3 right-3 w-2 h-2 border-t border-r border-white/30" />
-            
-            <div className="flex justify-between items-start">
-              <div>
-                <span className="font-mono text-[0.6875rem] tracking-[0.14em] uppercase text-[#B9AEAA]">
-                  01 / BIOMETRIC MANNEQUIN · SL-01
-                </span>
-                <h2 className="text-lg font-semibold tracking-tight text-white mt-1">
-                  In-Flight Physiological Mapping
-                </h2>
-              </div>
-              <span className="px-2.5 py-1 rounded-full bg-[#2A9D8F]/20 text-[#2A9D8F] font-mono text-[10px] tracking-wider uppercase">
-                Nominal
-              </span>
-            </div>
+        <button 
+          role="tab"
+          aria-selected={activeLayer === 'circulation'}
+          onClick={() => setActiveLayer('circulation')}
+          className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all w-16 ${
+            activeLayer === 'circulation' ? 'bg-purple-600/20 text-purple-300 border border-purple-500/40' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+          }`}
+        >
+          <span className="text-xs font-medium">Heart</span>
+        </button>
 
-            {/* Contenedor del Maniquí / Avatar 3D */}
-            <div className="my-auto flex flex-col items-center justify-center py-8">
-              <div className="w-32 h-64 rounded-full bg-gradient-to-b from-white/10 to-white/5 border border-white/20 flex items-center justify-center relative shadow-inner">
-                <span className="font-mono text-xs text-[#B9AEAA] tracking-widest text-center">
-                  THREE.JS<br />AVATAR ACTIVE
-                </span>
-                {/* Nodos de telemetría */}
-                <div className="absolute top-12 left-2 w-2 h-2 rounded-full bg-[#DF5A49] animate-ping" />
-                <div className="absolute top-12 left-2 w-2 h-2 rounded-full bg-[#DF5A49]" />
-                <div className="absolute top-28 right-4 w-2 h-2 rounded-full bg-[#2A9D8F]" />
-              </div>
-              <p className="font-mono text-[11px] text-[#B9AEAA] mt-4">
-                Active Telemetry: VTE Risk & Pelvic Circulation
-              </p>
-            </div>
+        <button 
+          role="tab"
+          aria-selected={activeLayer === 'hormones'}
+          onClick={() => setActiveLayer('hormones')}
+          className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all w-16 ${
+            activeLayer === 'hormones' ? 'bg-purple-600/20 text-purple-300 border border-purple-500/40' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+          }`}
+        >
+          <span className="text-xs font-medium">Hormones</span>
+        </button>
 
-            <div className="border-t border-white/10 pt-4 flex justify-between items-center text-xs font-mono text-[#B9AEAA]">
-              <span>PRIVACY: LOCAL ENCRYPTED</span>
-              <span>SRC: HERA-CORE-v4</span>
-            </div>
-          </div>
+        <button 
+          role="tab"
+          aria-selected={activeLayer === 'bones'}
+          onClick={() => setActiveLayer('bones')}
+          className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all w-16 ${
+            activeLayer === 'bones' ? 'bg-purple-600/20 text-purple-300 border border-purple-500/40' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+          }`}
+        >
+          <span className="text-xs font-medium">Bones</span>
+        </button>
+      </aside>
 
-          {/* Módulo de Indicadores Limpio (VTE Risk & Bone Shield) */}
-          <HormonalBalanceDial vteRisk={40} boneShield={85} />
-        </section>
-
-        {/* Columna Derecha: Bento Grid de Tarjetas */}
-        <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Tarjeta de Sueño / Orbital Sleep */}
-          <div className="bg-white rounded-[24px] p-7 border border-[#1F1A1B]/10 flex flex-col justify-between shadow-sm">
+      {/* Column 2: Main content area */}
+      <main className="relative overflow-y-auto p-8 flex flex-col gap-6">
+        
+        {/* Header and Status Banner (Fase 5) */}
+        <header className="flex flex-col gap-4 pb-4 border-b border-slate-800/40">
+          <div className="flex justify-between items-center">
             <div>
-              <span className="font-mono text-[0.6875rem] tracking-[0.14em] uppercase text-[#5F5551]">
-                02 / SLEEP & RECOVERY · SRC WHS-02
-              </span>
-              <h3 className="font-semibold text-[0.9375rem] tracking-[-0.01em] text-[#1F1A1B] mt-1">
-                Orbital Sleep Architecture
-              </h3>
-            </div>
-            <div className="my-6">
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-normal tracking-tight">7</span>
-                <span className="font-mono text-xs uppercase text-[#5F5551]">h</span>
-                <span className="text-4xl font-normal tracking-tight ml-2">12</span>
-                <span className="font-mono text-xs uppercase text-[#5F5551]">m</span>
+              <h1 className="text-xl font-semibold tracking-tight text-slate-100">{currentScenario.name} · Mission Health</h1>
+              {/* Status Banner */}
+              <div className="flex items-center gap-2 mt-1">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <p className="text-sm text-emerald-400 font-medium">All nominal · 1 recommendation for today</p>
               </div>
-              <p className="font-mono text-xs text-[#5F5551] mt-2">
-                REM: 1h 45m · Deep: 2h 10m · Efficiency: 92%
-              </p>
             </div>
-            <div className="w-full bg-[#FAF6F1] h-12 rounded-xl flex items-center px-4 justify-between font-mono text-xs text-[#5F5551]">
-              <span>Circadian Sync</span>
-              <span className="text-[#2A9D8F] font-semibold">83%</span>
+            
+            {/* Location selector */}
+            <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 rounded-lg p-1.5">
+              <span className="text-xs text-slate-400 px-2 font-mono">Location:</span>
+              <select 
+                value={scenarioId} 
+                onChange={(e) => setScenarioId(e.target.value)}
+                className="bg-slate-950 text-slate-200 text-xs rounded px-2 py-1 border border-slate-800 focus:outline-none focus:border-purple-500"
+              >
+                <option value="gateway">Lunar Gateway ({SCENARIOS.gateway.latencySeconds}s latency)</option>
+                <option value="mars">Mars Transit ({currentScenario.latencySeconds / 60}m latency)</option>
+              </select>
             </div>
           </div>
 
-          {/* Matriz BBT (21 Días) */}
-          <div className="md:col-span-1 shadow-sm">
-            <BbtMatrix days={bbtDays} />
-          </div>
+          {/* Hidden Jury Demo Mode controls (?demo=1) */}
+          {isDemoMode && (
+            <div className="flex items-center gap-3 p-3 bg-purple-950/30 border border-purple-800/50 rounded-xl text-xs">
+              <span className="font-mono uppercase text-purple-400 font-semibold">Jury Demo Mode:</span>
+              <span className="text-slate-300">Nominal Baseline locked for evaluation.</span>
+            </div>
+          )}
 
-          {/* Gráfico HRV con Eje Acotado (Ancho completo de la columna derecha) */}
-          <div className="md:col-span-2 shadow-sm">
-            <HrvChart data={hrvData} baseline={68} />
-          </div>
+          {/* User-Goal Navigation Tabs */}
+          <nav aria-label="User goals" className="flex items-center gap-2 pt-2">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
+                activeTab === 'overview' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/30' : 'bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              Overview (Today)
+            </button>
+            <button
+              onClick={() => setActiveTab('triage')}
+              className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
+                activeTab === 'triage' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/30' : 'bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              Symptom Check
+            </button>
+            <button
+              onClick={() => setActiveTab('vascular')}
+              className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
+                activeTab === 'vascular' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/30' : 'bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              Heart & Bones
+            </button>
+            <button
+              onClick={() => setActiveTab('intimate')}
+              className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
+                activeTab === 'intimate' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/30' : 'bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              Reproductive Health
+            </button>
+          </nav>
+        </header>
 
-        </div>
+        {/* Central layout depending on selected tab */}
+        {activeTab === 'overview' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in duration-200">
+            <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden min-h-[500px]">
+              <BodyViewer 
+                activeLayer={activeLayer}
+                onSelectCallout={(callout) => setSelectedCallout(callout)}
+              />
+            </div>
+            
+            {/* Sidebar telemetry and trend charts */}
+            <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 flex flex-col gap-6">
+              <div>
+                <h2 className="text-xs font-medium tracking-wide text-slate-300 uppercase font-mono mb-3">
+                  <Term term="Environmental Life Support" abbr="ECLSS" definition="Closed ecological life support system managing air, water, and waste." />
+                </h2>
+                <div className="flex justify-between items-center py-2.5 border-b border-slate-800/40 text-sm">
+                  <span className="text-slate-300">Internal CO₂ Loop</span>
+                  <span className="font-mono font-semibold text-emerald-400">{currentScenario.eclssCo2Percent}%</span>
+                </div>
+                <div className="flex justify-between items-center py-2.5 border-b border-slate-800/40 text-sm">
+                  <span className="text-slate-300">Water Hydration</span>
+                  <span className="font-mono font-semibold text-slate-200">{INITIAL_TELEMETRY.water.consumedMl} / {INITIAL_TELEMETRY.water.targetMl} ml</span>
+                </div>
+              </div>
+
+              <HrvChart 
+                currentValue={INITIAL_TELEMETRY.hrv.current} 
+                baseline={INITIAL_TELEMETRY.hrv.baseline} 
+                unit={INITIAL_TELEMETRY.hrv.unit} 
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'triage' && (
+          <div className="p-8 bg-slate-900/40 border border-slate-800/60 rounded-2xl flex flex-col gap-4 animate-in fade-in duration-200">
+            <h2 className="text-lg font-medium text-slate-100">Differential Triage & Symptom Checker</h2>
+            <p className="text-sm text-slate-300">Select any unexpected symptom to run automated clinical differential checks against your orbital baseline.</p>
+          </div>
+        )}
+
+        {activeTab === 'vascular' && (
+          <div className="p-8 bg-slate-900/40 border border-slate-800/60 rounded-2xl flex flex-col gap-4 animate-in fade-in duration-200">
+            <h2 className="text-lg font-medium text-slate-100">Vascular & Bone Density Status</h2>
+            <p className="text-sm text-slate-300">Detailed logs for bone mineral density (<Term term="Bone Mineral Density" abbr="BMD" definition="Measurement of bone mineral content per square centimeter." />) response to <Term term="Advanced Resistive Exercise Device" abbr="ARED" definition="Exercise machine used by astronauts to mitigate bone and muscle loss." /> protocols.</p>
+          </div>
+        )}
+
+        {activeTab === 'intimate' && (
+          <div className="p-8 bg-slate-900/40 border border-slate-800/60 rounded-2xl flex flex-col gap-4 animate-in fade-in duration-200">
+            <h2 className="text-lg font-medium text-slate-100">Reproductive Health & Basal Temperature</h2>
+            <p className="text-sm text-slate-300">Continuous combined regimen (<Term term="Oral Contraceptive Pill" abbr="OCP" definition="Medication used for birth control and hormonal regulation." />) logs and cycle analytics evaluated against personal baseline.</p>
+          </div>
+        )}
 
       </main>
+
+      {/* Centered Modal Component */}
+      <MetricModal 
+        callout={selectedCallout} 
+        onClose={() => setSelectedCallout(null)} 
+      />
     </div>
   );
-};
-
-export default Dashboard;
+}

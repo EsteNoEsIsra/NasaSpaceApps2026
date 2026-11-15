@@ -4,17 +4,27 @@
   :root {
     --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+    /* Design Tokens (Unificación de Tema y Accesibilidad) */
+    --stage-bg: radial-gradient(120% 90% at 50% 30%, #FFFFFF 0%, #FBF1EE 60%, #F4E4DE 100%);
+    --ink: #1F1B24;
+    --ink-muted: #5B5560;
+    --ok: #1F7A5C;
+    --watch: #B45309;
+    --act: #B3261E; /* Reservado exclusivamente para alertas críticas */
+    --accent: #5B3E8F; /* Acento interactivo corporativo */
   }
 
   body {
     font-family: var(--font-sans);
     background-color: #F5F3F0;
-    color: #1A1517;
+    color: var(--ink);
     margin: 0;
     padding: 0;
   }
 }
 
+/* Clases de utilidad y componentes estables */
 .font-mono-tech {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -24,11 +34,22 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* El panel del cuerpo mantiene siempre el mismo fondo claro independiente del escenario */
 .anatomy-stage-bg {
-  background: radial-gradient(circle at 50% 42%, #FFFFFF 0%, #FDF7F5 48%, #F3E6E1 100%);
+  background: var(--stage-bg);
 }
 
 .obsidian-card {
   background: linear-gradient(160deg, #1E1518 0%, #120D0F 100%);
   color: #F9F7F5;
+}
+
+/* Corrección de tipografía y accesibilidad: Tamaño mínimo de texto de cuerpo ≥14px */
+body, p, span, button, input, select {
+  font-size: 14px;
+}
+
+/* Excepciones controladas para elementos métricos destacados */
+.text-metric-large {
+  font-size: 24px;
 }
