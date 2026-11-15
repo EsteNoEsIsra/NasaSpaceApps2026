@@ -1,12 +1,26 @@
 # HERA — Aerospace Medical Suite
 
+<<<<<<< HEAD
 ### Autonomous Endocrine & Physiological Triage for Female Astronauts in Deep Space
+=======
+> NASA Hackathon Project — React + TypeScript · Node/Express + TypeScript · PostgreSQL (Drizzle ORM) · Docker
+>>>>>>> a3cbff4a99cd6022da60e0ee636d4a82596ea24d
 
 ## 🛰️ Executive Summary
 
+<<<<<<< HEAD
 During extended deep-space operations—such as multi-month deployments at the Lunar Gateway or a 3-year Mars Transit—astronauts experience significant microgravity adaptations, fluid redistribution, and altered metabolic baselines.
 
 Historically, aerospace medical models have treated female endocrinology and physiology as operational edge cases. **HERA (Hormonal Evaluation and Regulation in Astronauts)** re-centers space medicine around female physiological baselines. Built with a high-density, editorial-grade UI, HERA functions fully autonomously onboard the spacecraft without requiring active Earth connectivity, bridging a critical gap where communication latencies can reach up to 40 minutes round-trip.
+=======
+| Layer      | Technology                       |
+|------------|----------------------------------|
+| Frontend   | React 19 · TypeScript · Vite     |
+| Backend    | Node.js · Express 5 · TypeScript |
+| Database   | PostgreSQL · Drizzle ORM · Redis |
+| Infra      | Docker · docker-compose          |
+
+>>>>>>> a3cbff4a99cd6022da60e0ee636d4a82596ea24d
 
 ## 📑 Table of Contents
 
