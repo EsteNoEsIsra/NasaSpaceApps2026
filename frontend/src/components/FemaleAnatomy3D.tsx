@@ -97,7 +97,7 @@ interface FemaleAnatomy3DProps {
 export function FemaleAnatomy3D({
   selectedSystem,
   onSelectSystem,
-  systemSeverities = { 'neuro-ocular': 'info', 'cardiovascular': 'info', 'skeletal': 'info', 'urogenital': 'info' },
+  systemSeverities,
   co2Level,
   bodyTemp,
   baselineTemp,
@@ -119,11 +119,35 @@ export function FemaleAnatomy3D({
   const prevMouseYRef = useRef<number>(0);
   const targetRotXRef = useRef<number>(0);
 
+  // Semáforo inteligente garantizado: evalúa las props o fuerza rojo crítico si el CO2 o SANS está activo
+  const getEffectiveSeverities = (): Record<BodySystemId, Severity> => {
+    // Si se pasa un nivel alto de CO2 o el entorno de SANS, forzamos rojo en neuro-ocular
+    if (co2Level > 0.5) {
+      return {
+        'neuro-ocular': 'critical', // ROJO PELIGRO
+        'cardiovascular': 'warning',  // Amarillo precaución
+        'skeletal': 'info',
+        'urogenital': 'info',
+      };
+    }
+    if (systemSeverities) {
+      return systemSeverities;
+    }
+    return {
+      'neuro-ocular': 'info',
+      'cardiovascular': 'info',
+      'skeletal': 'info',
+      'urogenital': 'info',
+    };
+  };
+
+  const currentSeverities = getEffectiveSeverities();
+
   const selectedRef = useRef<BodySystemId | null>(selectedSystem);
-  const severitiesRef = useRef<Record<BodySystemId, Severity>>(systemSeverities);
+  const severitiesRef = useRef<Record<BodySystemId, Severity>>(currentSeverities);
 
   selectedRef.current = selectedSystem;
-  severitiesRef.current = systemSeverities;
+  severitiesRef.current = currentSeverities;
 
   const handleKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
     if (!tabListRef.current) return;
@@ -273,9 +297,9 @@ export function FemaleAnatomy3D({
     const clock = new THREE.Clock();
 
     const getSeverityHex = (sev: Severity): number => {
-      if (sev === 'critical') return 0xdf5a49; // Rojo
-      if (sev === 'warning') return 0xe9c46a;  // Amarillo
-      return 0x2a9d8f;                          // Verde
+      if (sev === 'critical') return 0xdf5a49; // Rojo Crítico
+      if (sev === 'warning') return 0xe9c46a;  // Amarillo Precaución
+      return 0x2a9d8f;                          // Verde Nominal
     };
 
     const animate = () => {
@@ -340,7 +364,7 @@ export function FemaleAnatomy3D({
   }, [modelUrl, useHolographicMaterial]);
 
   const activeSystemInfo = BODY_SYSTEMS.find((s) => s.id === selectedSystem) ?? BODY_SYSTEMS[1];
-  const activeSeverity = selectedSystem ? systemSeverities[selectedSystem] : 'info';
+  const activeSeverity = selectedSystem ? currentSeverities[selectedSystem] : 'info';
   
   const tempDelta = Number((bodyTemp - baselineTemp).toFixed(1));
   const tempStatusText = tempDelta === 0 
@@ -366,7 +390,7 @@ export function FemaleAnatomy3D({
         {LAYERS.map((layer, index) => {
           const Icon = layer.icon;
           const isSelected = selectedSystem === layer.id;
-          const severity = systemSeverities[layer.id];
+          const severity = currentSeverities[layer.id];
 
           return (
             <button
@@ -470,19 +494,19 @@ export function FemaleAnatomy3D({
           className="w-full flex-1 my-auto cursor-grab active:cursor-grabbing min-h-[520px]"
         />
 
-        {/* Projected 2D Hotspot Badges (Semáforo exacto: Rojo, Amarillo, Verde) */}
+        {/* Projected 2D Hotspot Badges (Semáforo estricto: Rojo crítico, Amarillo precaución, Verde nominal) */}
         {projectedPoints.map((pt) => {
           if (!pt.visible) return null;
 
           const cfg = BODY_SYSTEMS.find((s) => s.id === pt.id)!;
-          const sev = systemSeverities[pt.id];
+          const sev = currentSeverities[pt.id];
           const isSelected = pt.id === selectedSystem;
           const isIntimateLocked = pt.id === 'urogenital' && privacyMode;
 
           const badgeColor = isSelected
             ? 'bg-[#7c529e] text-white border-[#7c529e] ring-4 ring-[#7c529e]/30 scale-105 shadow-xl'
             : sev === 'critical'
-              ? 'bg-[#DF5A49] text-white border-[#DF5A49] ring-4 ring-[#DF5A49]/30 animate-bounce shadow-[0_0_16px_rgba(223,90,73,0.6)]'
+              ? 'bg-[#DF5A49] text-white border-[#DF5A49] ring-4 ring-[#DF5A49]/30 animate-bounce shadow-[0_0_16px_rgba(223,90,73,0.6)] font-bold'
               : sev === 'warning'
                 ? 'bg-[#E9C46A] text-[#1A1517] border-[#E9C46A] ring-4 ring-[#E9C46A]/30 shadow-[0_0_12px_rgba(233,196,106,0.5)] font-bold'
                 : 'bg-white/95 text-[var(--ink)] border-[#E4DDD8] hover:border-[var(--accent)] ring-2 ring-black/5 shadow-sm';
