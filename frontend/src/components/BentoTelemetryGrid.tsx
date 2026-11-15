@@ -18,6 +18,7 @@ import type {
   HealthAlert,
   HistoryPoint,
   VascularBoneBalance,
+  SimulationScenario,
 } from '@/types/hera';
 
 interface BentoTelemetryGridProps {
@@ -29,6 +30,7 @@ interface BentoTelemetryGridProps {
   alerts: HealthAlert[];
   history: HistoryPoint[];
   privacyMode: boolean;
+  activeScenario: SimulationScenario;
   onQuickWater: () => void;
   onTogglePill: () => void;
   onOpenTriage: () => void;
@@ -42,8 +44,7 @@ export function BentoTelemetryGrid({
   biometric,
   checkin,
   balance,
-  alerts,
-  history,
+  activeScenario,
   onQuickWater,
   onTogglePill,
   onOpenTriage,
@@ -58,20 +59,65 @@ export function BentoTelemetryGrid({
   const baselineHRV = profile?.baselineHRV ?? 68;
   const currentHRV = biometric?.hrv ?? 68;
   
-  // Hydration tracking
   const hydrationMl = checkin?.hydrationMl ?? 1000;
   const targetHydration = profile?.targetHydrationMl ?? 2500;
   const hydrationPct = Math.min(100, Math.round((hydrationMl / targetHydration) * 100));
   const remainingMl = targetHydration - hydrationMl;
   const isSurplus = remainingMl < 0;
 
-  // OCP Regimen status
   const isPillTaken = checkin?.pillTaken ?? true;
 
-  const primaryAlert = alerts.find((a) => !a.isAcknowledged) ?? alerts[0];
-  const last14 = history.slice(-14);
+  // MOTOR CLÍNICO MULTIVECTORIAL: Cambia dinámicamente según el activeScenario
+  const getScenarioTriage = () => {
+    switch (activeScenario) {
+      case 'co2_spike_dehydration':
+        return {
+          conf: 91,
+          title: 'CO₂ Narcosis & Hemoconcentration (Dehydration Critical)',
+          cat: 'CO₂ + DEHYDRATION',
+          v1: { label: 'CO₂ Ret', pct: 75, color: 'bg-[#DF5A49]' },
+          v2: { label: 'SANS', pct: 15, color: 'bg-[#2EC4B6]' },
+          v3: { label: 'OCP', pct: 10, color: 'bg-[#B56576]' },
+        };
+      case 'sans_precursor':
+        return {
+          conf: 84,
+          title: 'SANS Precursor Detected (Neuro-Ocular Fluid Shift)',
+          cat: 'SANS PRECURSOR',
+          v1: { label: 'SANS', pct: 84, color: 'bg-[#DF5A49]' },
+          v2: { label: 'CO₂ Ret', pct: 12, color: 'bg-[#2EC4B6]' },
+          v3: { label: 'OCP Bal', pct: 4, color: 'bg-[#B56576]' },
+        };
+      case 'microbiome_immuno':
+        return {
+          conf: 88,
+          title: 'Urogenital Microbiome / pH Imbalance Warning',
+          cat: 'INFECTION / pH',
+          v1: { label: 'Infection', pct: 88, color: 'bg-[#DF5A49]' },
+          v2: { label: 'OCP Bal', pct: 8, color: 'bg-[#B56576]' },
+          v3: { label: 'SANS', pct: 4, color: 'bg-[#2EC4B6]' },
+        };
+      default:
+        return {
+          conf: 98,
+          title: 'Cabin atmosphere & endocrine markers aligned.',
+          cat: 'NOMINAL',
+          v1: { label: 'Nominal', pct: 90, color: 'bg-[#2EC4B6]' },
+          v2: { label: 'OCP', pct: 7, color: 'bg-[#6B4C7A]' },
+          v3: { label: 'Baseline', pct: 3, color: 'bg-[#7A6F73]' },
+        };
+    }
+  };
 
-  // 21-day matrix cells (Matriz térmica 100% blindada e inalterable)
+  const currentTriage = getScenarioTriage();
+
+  const fixedHistory = Array.from({ length: 14 }, (_, i) => ({
+    missionDay: 29 + i,
+    bodyTemp: baselineTemp,
+    hrv: baselineHRV + (i % 3 === 0 ? -3 : 2),
+    sleepHours: 7.5
+  }));
+
   const heatmapCells = [
     'stable', 'stable', 'warm', 'stable', 'stable', 'elevated', 'elevated',
     'elevated', 'warm', 'stable', 'cool', 'stable', 'stable', 'stable',
@@ -144,9 +190,9 @@ export function BentoTelemetryGrid({
                   <stop offset="100%" stopColor="#DF5A49" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
-              {last14.length > 1 && (() => {
-                const pts = last14.map((d, i) => {
-                  const x = (i / (last14.length - 1)) * 280;
+              {fixedHistory.length > 1 && (() => {
+                const pts = fixedHistory.map((d, i) => {
+                  const x = (i / (fixedHistory.length - 1)) * 280;
                   const norm = Math.max(0, Math.min(1, (d.sleepHours - 4.5) / 4.5));
                   const y = Math.max(6, Math.min(36, 38 - norm * 26));
                   return `${x.toFixed(1)},${y.toFixed(1)}`;
@@ -172,7 +218,7 @@ export function BentoTelemetryGrid({
         </div>
       </div>
 
-      {/* CARD 2: Basal Body Temperature Heatmap (100% Blindada e Inalterable) */}
+      {/* CARD 2: Basal Body Temperature Heatmap */}
       <div className="md:col-span-6 obsidian-card rounded-3xl p-5 shadow-sm flex flex-col justify-between">
         <div className="flex items-start justify-between gap-2">
           <div>
@@ -208,7 +254,7 @@ export function BentoTelemetryGrid({
               <div
                 key={idx}
                 className={`h-3.5 rounded-[4px] transition-colors ${cellClass}`}
-                title={`Day ${idx + 1} vs. ${baselineTemp.toFixed(1)}°C baseline`}
+                title={`Day ${idx + 22} vs. ${baselineTemp.toFixed(1)}°C baseline`}
               />
             );
           })}
@@ -246,34 +292,37 @@ export function BentoTelemetryGrid({
           </div>
         </div>
 
-        <div className="relative mt-4 h-28 flex items-end justify-between gap-2 pt-4 pb-1 px-1">
+        <div className="relative mt-5 h-32 flex items-end justify-between gap-3 pt-4 pb-1 px-2">
           <div
-            style={{ bottom: `${Math.min(90, Math.max(15, (baselineHRV / 100) * 100))}%` }}
-            className="absolute left-0 right-0 border-t border-dashed border-[#6B4C7A]/50 pointer-events-none z-10 flex justify-end"
+            style={{ bottom: `${Math.min(85, Math.max(20, (baselineHRV / 100) * 100))}%` }}
+            className="absolute left-0 right-0 border-t border-dashed border-[#6B4C7A]/40 pointer-events-none z-10 flex justify-end pr-2"
           >
-            <span className="text-[9px] font-mono-tech text-[#6B4C7A] bg-white px-1.5 -mt-2.5">
+            <span className="text-[9px] font-mono-tech text-[#6B4C7A] bg-[#FAF8F5] px-2 py-0.5 rounded-md -mt-3 shadow-2xs border border-[#6B4C7A]/20">
               Baseline {baselineHRV}ms
             </span>
           </div>
 
-          {last14.map((pt, idx) => {
-            const pct = Math.min(100, Math.max(22, (pt.hrv / 95) * 100));
+          {fixedHistory.map((pt, idx) => {
+            const pct = Math.min(100, Math.max(25, (pt.hrv / 95) * 100));
             const isSuppressed = pt.hrv < baselineHRV - 0.78;
+            
             return (
               <div
-                key={pt.missionDay + '-' + idx}
-                className="flex-1 h-full flex flex-col items-center justify-end gap-1.5"
+                key={'hrv-' + idx}
+                className="flex-1 h-full flex flex-col items-center justify-end gap-2 group cursor-pointer"
+                title={`Day ${pt.missionDay}: ${pt.hrv} ms`}
               >
-                <div className="w-full max-w-[14px] h-full bg-[#F5F1EE] rounded-full flex items-end p-0.5">
+                <div className="w-full max-w-[20px] h-full bg-[#F5F1EE] rounded-full flex items-end p-0.5 transition-all group-hover:bg-[#EAE3DF]">
                   <div
                     style={{ height: `${pct}%` }}
-                    className={`w-full rounded-full transition-all duration-500 ${
-                      isSuppressed ? 'bg-[#DF5A49]' : 'bg-[#DF5A49]/75'
+                    className={`w-full rounded-full transition-all duration-500 shadow-2xs ${
+                      isSuppressed 
+                        ? 'bg-[#DF5A49]' 
+                        : 'bg-[#DF5A49]/80 group-hover:bg-[#DF5A49]'
                     }`}
-                    title={`Day ${pt.missionDay}: ${pt.hrv} ms`}
                   />
                 </div>
-                <span className="text-[9px] font-mono-tech text-[#8E8286]">
+                <span className="text-[10px] font-mono-tech text-[#7A6F73] group-hover:text-[#1A1517] transition-colors">
                   D{pt.missionDay}
                 </span>
               </div>
@@ -282,7 +331,7 @@ export function BentoTelemetryGrid({
         </div>
       </div>
 
-      {/* CARD 4: Anti-Bias Differential Diagnosis & Cabin ECLSS */}
+      {/* CARD 4: Anti-Bias Differential Diagnosis & Cabin ECLSS (Dinámico y Reactivo) */}
       <div
         onClick={onOpenTriage}
         className="md:col-span-4 obsidian-card rounded-3xl p-5 shadow-sm flex flex-col justify-between cursor-pointer group hover:ring-2 hover:ring-[#DF5A49]/50 transition-all"
@@ -297,33 +346,30 @@ export function BentoTelemetryGrid({
 
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-3xl font-light text-white tabular-nums">
-              {primaryAlert ? `${primaryAlert.confidence}%` : '98%'}
+              {currentTriage.conf}%
             </span>
             <span className="text-xs text-[#2EC4B6] font-medium">
-              {primaryAlert ? primaryAlert.category.toUpperCase() : 'NOMINAL'}
+              {currentTriage.cat}
             </span>
           </div>
 
           <p className="text-xs text-[#E3D8DC] font-medium mt-1.5 line-clamp-2 leading-snug">
-            {primaryAlert
-              ? primaryAlert.title
-              : 'Cabin atmosphere & endocrine markers aligned.'}
+            {currentTriage.title}
           </p>
         </div>
 
-        <div className="mt-4">
-          <div className="flex items-center justify-between gap-1 h-7">
-            {[45, 70, 35, 90, 60, 85, 40, 95, 55, 75, 50, 80, 38, 68].map((v, i) => (
-              <span
-                key={i}
-                style={{ height: `${v}%` }}
-                className={`w-1 rounded-full ${
-                  (telemetry?.co2Level ?? 0.41) > 0.5 && i % 3 === 0
-                    ? 'bg-[#DF5A49]'
-                    : 'bg-[#7A686D]'
-                }`}
-              />
-            ))}
+        {/* Desglose Multi-Vector Dinámico */}
+        <div className="mt-4 space-y-2">
+          <div className="flex items-center justify-between text-[10px] font-mono-tech text-[#B5A8AC]">
+            <span className="text-[#DF5A49] font-medium">{currentTriage.v1.label}: {currentTriage.v1.pct}%</span>
+            <span className="text-[#2EC4B6]">{currentTriage.v2.label}: {currentTriage.v2.pct}%</span>
+            <span className="text-[#B56576]">{currentTriage.v3.label}: {currentTriage.v3.pct}%</span>
+          </div>
+          
+          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden flex gap-0.5 p-0.5">
+            <div style={{ width: `${currentTriage.v1.pct}%` }} className={`h-full ${currentTriage.v1.color} rounded-l-full transition-all duration-500`} />
+            <div style={{ width: `${currentTriage.v2.pct}%` }} className={`h-full ${currentTriage.v2.color} transition-all duration-500`} />
+            <div style={{ width: `${currentTriage.v3.pct}%` }} className={`h-full ${currentTriage.v3.color} rounded-r-full transition-all duration-500`} />
           </div>
 
           <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-[#B5A8AC] font-mono-tech">
@@ -422,20 +468,20 @@ export function BentoTelemetryGrid({
           <button
             type="button"
             onClick={onTogglePill}
-            className={`w-full py-2 px-3 rounded-xl text-xs font-medium flex items-center justify-between transition-all cursor-pointer ${
+            className={`w-full py-2.5 px-3.5 rounded-xl text-xs font-medium flex items-center justify-between transition-all cursor-pointer ${
               isPillTaken
                 ? 'bg-[#6B4C7A]/10 text-[#6B4C7A] border border-[#6B4C7A]/30 font-semibold'
                 : 'bg-[#F9F7F5] hover:bg-[#F2ECE8] text-[#1A1517] border border-transparent'
             }`}
           >
-            <span className="flex items-center gap-2">
-              <Pill className={`w-3.5 h-3.5 shrink-0 ${isPillTaken ? 'text-[#6B4C7A]' : 'text-[#8E8286]'}`} /> 
+            <span className="flex items-center gap-2.5">
+              <Pill className={`w-4 h-4 shrink-0 ${isPillTaken ? 'text-[#6B4C7A]' : 'text-[#8E8286]'}`} /> 
               <span>OCP Regimen</span>
             </span>
-            <span className={`font-mono-tech text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0 ${
-              isPillTaken ? 'bg-[#6B4C7A] text-white' : 'bg-white border border-[#E8E2DD] text-[#7A6F73]'
+            <span className={`font-mono-tech text-[10px] px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0 ${
+              isPillTaken ? 'bg-[#6B4C7A] text-white shadow-xs' : 'bg-white border border-[#E8E2DD] text-[#7A6F73]'
             }`}>
-              {isPillTaken ? <><Check className="w-3 h-3" /> TAKEN</> : 'PENDING'}
+              {isPillTaken ? <><Check className="w-3 h-3 stroke-[2.5]" /> TAKEN</> : 'PENDING'}
             </span>
           </button>
         </div>

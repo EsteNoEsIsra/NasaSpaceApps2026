@@ -43,11 +43,11 @@ export default function Home() {
     profile: { baselineTemp: 36.6, baselineHRV: 68, targetHydrationMl: 2500, missionEnvironment: 'lunar-base', contraceptiveType: 'combined' },
     latestTelemetry: { co2Level: 0.41, o2Level: 21.1 },
     latestBiometric: { bodyTemp: 36.6, hrv: 68 },
-    // Forzado estrictamente al Día 42 de la misión
+    // Fijo estrictamente en el Día 42 de la misión
     latestCheckin: { missionDay: 42, hydrationMl: 1000, exerciseMinutes: 60, sleepHours: 7.2, pillTaken: true, symptoms: [] },
     vascularBoneBalance: { thrombosis: { score: 20 }, boneProtection: { score: 85, level: 'nominal' } },
     alerts: [],
-    history: Array.from({ length: 21 }, (_, i) => ({ missionDay: 42 + i - 20, bodyTemp: 36.6, hrv: 68, sleepHours: 7.5 }))
+    history: Array.from({ length: 14 }, (_, i) => ({ missionDay: 29 + i, bodyTemp: 36.6, hrv: 68, sleepHours: 7.5 }))
   });
 
   const [loading, setLoading] = useState(false);
@@ -134,7 +134,7 @@ export default function Home() {
     }
   };
 
-  // Robust simulation & global reset logic
+  // Motor de Simulación Médica Avanzada (Efecto dominó clínico en toda la app)
   const handleScenarioChange = async (scenario: SimulationScenario) => {
     setActiveScenario(scenario);
 
@@ -143,7 +143,7 @@ export default function Home() {
         ...prev,
         latestTelemetry: { co2Level: 0.41, o2Level: 21.1 },
         latestBiometric: { bodyTemp: baselineTemp, hrv: baselineHrv },
-        latestCheckin: { missionDay: 42, hydrationMl: 1000, exerciseMinutes: 60, sleepHours: 7.2, pillTaken: true, symptoms: [] },
+        latestCheckin: { missionDay: 42, hydrationMl: 2200, exerciseMinutes: 60, sleepHours: 7.8, pillTaken: true, symptoms: [] },
         vascularBoneBalance: { thrombosis: { score: 20 }, boneProtection: { score: 85, level: 'nominal' } },
         alerts: []
       }));
@@ -156,25 +156,39 @@ export default function Home() {
       });
       if (res?.data) setData(res.data);
     } catch {
+      // Simulación clínica local robusta por cada escenario
       if (scenario === 'co2_spike_dehydration') {
         setData((prev) => ({
           ...prev,
-          latestTelemetry: { co2Level: 0.65, o2Level: 20.2 },
-          latestCheckin: prev.latestCheckin ? { ...prev.latestCheckin, missionDay: 42, hydrationMl: 1800, pillTaken: false } : null,
-          vascularBoneBalance: { thrombosis: { score: 65 }, boneProtection: { score: 70, level: 'warning' } }
+          latestTelemetry: { co2Level: 0.68, o2Level: 20.1 },
+          latestBiometric: { bodyTemp: 36.9, hrv: 48 },
+          latestCheckin: prev.latestCheckin ? { ...prev.latestCheckin, missionDay: 42, hydrationMl: 1350, pillTaken: false } : null,
+          vascularBoneBalance: { thrombosis: { score: 72 }, boneProtection: { score: 70, level: 'warning' } },
+          alerts: [
+            { id: 'al-co2', category: 'environmental', severity: 'critical', title: 'CO₂ Narcosis & Hemoconcentration (Dehydration Critical)', confidence: 91, isAcknowledged: false }
+          ]
         }));
       } else if (scenario === 'sans_precursor') {
         setData((prev) => ({
           ...prev,
-          latestTelemetry: { co2Level: 0.55, o2Level: 20.8 },
-          latestBiometric: { bodyTemp: 36.8, hrv: 55 },
-          latestCheckin: prev.latestCheckin ? { ...prev.latestCheckin, missionDay: 42, hydrationMl: 1500 } : null
+          latestTelemetry: { co2Level: 0.52, o2Level: 20.8 },
+          latestBiometric: { bodyTemp: 36.7, hrv: 56 },
+          latestCheckin: prev.latestCheckin ? { ...prev.latestCheckin, missionDay: 42, hydrationMl: 2300, pillTaken: true } : null,
+          vascularBoneBalance: { thrombosis: { score: 45 }, boneProtection: { score: 78, level: 'nominal' } },
+          alerts: [
+            { id: 'al-sans', category: 'sans', severity: 'warning', title: 'SANS Precursor Detected (Neuro-Ocular Fluid Shift)', confidence: 84, isAcknowledged: false }
+          ]
         }));
       } else if (scenario === 'microbiome_immuno') {
         setData((prev) => ({
           ...prev,
+          latestTelemetry: { co2Level: 0.44, o2Level: 21.0 },
           latestBiometric: { bodyTemp: 37.1, hrv: 60 },
-          latestCheckin: prev.latestCheckin ? { ...prev.latestCheckin, missionDay: 42, hydrationMl: 1200, pillTaken: true } : null
+          latestCheckin: prev.latestCheckin ? { ...prev.latestCheckin, missionDay: 42, hydrationMl: 1700, pillTaken: true } : null,
+          vascularBoneBalance: { thrombosis: { score: 35 }, boneProtection: { score: 80, level: 'nominal' } },
+          alerts: [
+            { id: 'al-inf', category: 'infection', severity: 'warning', title: 'Urogenital Microbiome / pH Imbalance Warning', confidence: 88, isAcknowledged: false }
+          ]
         }));
       }
     }
@@ -185,6 +199,7 @@ export default function Home() {
       ...prev,
       latestCheckin: prev.latestCheckin ? {
         ...prev.latestCheckin,
+        missionDay: 42,
         hydrationMl: (payload.hydrationMl as number) ?? prev.latestCheckin.hydrationMl,
         pillTaken: (payload.pillTaken as boolean) ?? prev.latestCheckin.pillTaken
       } : null
@@ -457,6 +472,7 @@ export default function Home() {
               alerts={data.alerts}
               history={data.history}
               privacyMode={privacyMode}
+              activeScenario={activeScenario}
               onQuickWater={handleQuickWater}
               onTogglePill={handleTogglePill}
               onOpenTriage={() => setActiveDrawer('triage')}
